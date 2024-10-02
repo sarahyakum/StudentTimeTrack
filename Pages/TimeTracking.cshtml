@@ -1,0 +1,24 @@
+@page
+
+@{
+    ViewData["Title"] = "Time Tracking";
+}
+
+<h1>Time Tracking - @DateTime.Now.ToShortDateString()</h1>
+<form method="post">
+    <div>
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="Date" required />
+    </div>
+    <div>
+        <label for="time">Time:</label>
+        <input type="number" id="time" name="HoursWorked" required />
+    </div>
+    <div>
+        <label for="description">Description:</label>
+        <textarea id="description" name="Description" required minlength="30"></textarea>
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+<button onclick="window.location.href='/WeeklyView'">Weekly View</button>

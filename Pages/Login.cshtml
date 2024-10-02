@@ -1,0 +1,20 @@
+@page
+
+@{
+    ViewData["Title"] = "Log In";
+}
+
+<h1>Log In</h1>
+<form method="post">
+    <div>
+        <label for="utdId">UTD ID:</label>
+        <input type="text" id="utdId" name="UtdId" required />
+    </div>
+    <div>
+        <label for="netId">NetID:</label>
+        <input type="text" id="netId" name="NetId" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+<a href="/UnsuccessfulLogin">Unsuccessful Log In Page</a>
