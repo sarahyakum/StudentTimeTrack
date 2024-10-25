@@ -9,63 +9,63 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = StudentWebApp
 build_property.RootNamespace = StudentWebApp
-build_property.ProjectDir = /Users/KiaraVaz1/SeniorProject/StudentWebApp/
+build_property.ProjectDir = /Users/KiaraVaz1/SeniorProject/StudentTimeTrack/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /Users/KiaraVaz1/SeniorProject/StudentWebApp
+build_property.MSBuildProjectDirectory = /Users/KiaraVaz1/SeniorProject/StudentTimeTrack
 build_property._RazorSourceGeneratorDebug = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/Error.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/Index.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/LastWeekView.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/LastWeekView.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTGFzdFdlZWtWaWV3LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/Login.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/Privacy.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUHJpdmFjeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/Shared/_ValidationScriptsPartial.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/TimeTracking.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/TimeTracking.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvVGltZVRyYWNraW5nLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/UnsuccessfulLogin.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/UnsuccessfulLogin.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvVW5zdWNjZXNzZnVsTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/WeeklyView.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/WeeklyView.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV2Vla2x5Vmlldy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/WholeProjectView.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/WholeProjectView.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV2hvbGVQcm9qZWN0Vmlldy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/_ViewImports.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/_ViewStart.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/KiaraVaz1/SeniorProject/StudentWebApp/Pages/Shared/_Layout.cshtml]
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvU2hhcmVkL19MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-n8cgcxj457

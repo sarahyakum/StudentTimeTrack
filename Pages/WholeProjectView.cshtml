@@ -1,10 +1,49 @@
 @page
-
+@model WholeProjectViewModel
 @{
+    Layout = "_Layout";
     ViewData["Title"] = "Whole Project View";
+
+    // Get current date
+    var currentDate = DateTime.Today;
+
+    // Use the month and year from the model or default to current
+    int month = Model.SelectedMonth != 0 ? Model.SelectedMonth : currentDate.Month;
+    int year = Model.SelectedYear != 0 ? Model.SelectedYear : currentDate.Year;
+
+    // Create a DateTime for the first day of the selected month
+    DateTime firstDayOfMonth = new DateTime(year, month, 1);
+    int daysInMonth = DateTime.DaysInMonth(year, month);
+    
+    // Create an array for the days of the month
+    var daysOfMonth = Enumerable.Range(1, daysInMonth)
+                                .Select(day => new DateTime(year, month, day))
+                                .ToArray();
 }
 
-<h1>Project History</h1>
-<!-- Placeholder for displaying all time entries -->
-<p>Display time logged for the entire project history here.</p>
-<button onclick="window.location.href='/TimeTracking'">Back to Time Tracking</button>
+<h2>Whole Project View</h2>
+
+<div class="month-navigation">
+    <form method="get">
+        <input type="hidden" name="year" value="@year" />
+        <input type="hidden" name="month" value="@month" />
+        <button name="change" value="prev">&lt; Previous Month</button>
+        <h3>@firstDayOfMonth.ToString("MMMM yyyy")</h3>
+        <button name="change" value="next">Next Month &gt;</button>
+    </form>
+</div>
+
+<!-- Calendar Layout for the Month -->
+<div class="calendar-container">
+    @foreach (var day in daysOfMonth)
+    {
+        <div class="day @(day == DateTime.Today ? "current-day" : "")">
+            <div class="date">@day.ToString("dddd, MMM dd")</div>
+            <div class="time-entries">
+                <p>No time entries yet.</p>
+            </div>
+            <button class="edit-btn">Edit Time Slot</button>
+            <button class="add-btn">Add Time Slot</button>
+        </div>
+    }
+</div>

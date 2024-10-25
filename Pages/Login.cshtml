@@ -1,20 +1,24 @@
 @page
-
+@model YourNamespace.Pages.LogInModel
 @{
     ViewData["Title"] = "Log In";
 }
 
 <h1>Log In</h1>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div style="color: red;">@Model.ErrorMessage</div>
+}
+
 <form method="post">
-    <div>
-        <label for="utdId">UTD ID:</label>
-        <input type="text" id="utdId" name="UtdId" required />
-    </div>
     <div>
         <label for="netId">NetID:</label>
         <input type="text" id="netId" name="NetId" required />
     </div>
+    <div>
+        <label for="utdId">UTD ID:</label>
+        <input type="password" id="utdId" name="UtdId" required />
+    </div>
     <button type="submit">Submit</button>
 </form>
-
-<a href="/UnsuccessfulLogin">Unsuccessful Log In Page</a>

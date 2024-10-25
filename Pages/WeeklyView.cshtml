@@ -1,10 +1,33 @@
 @page
-
 @{
+    Layout = "_Layout";
     ViewData["Title"] = "Weekly View";
+
+    // Calculate the current date
+    var currentDate = DateTime.Today;
+
+    // Calculate the start of the week (Monday)
+    var startOfWeek = currentDate.AddDays(-(int)currentDate.DayOfWeek + 1);
+
+    // Create an array for the days of the week
+    var daysOfWeek = Enumerable.Range(0, 7)
+                               .Select(i => startOfWeek.AddDays(i))
+                               .ToArray();
 }
 
-<h1>Weekly Time Tracking</h1>
-<!-- Placeholder for displaying time entries -->
-<p>Display time logged for the current week here.</p>
-<button onclick="window.location.href='/TimeTracking'">Back to Time Tracking</button>
+<h2>Weekly View</h2>
+
+<!-- Calendar Layout -->
+<div class="calendar-container">
+    @foreach (var day in daysOfWeek)
+    {
+        <div class="day @(day == currentDate ? "current-day" : "")">
+            <div class="date">@day.ToString("dddd, MMM dd")</div>
+            <div class="time-entries">
+                <p>No time entries yet.</p>
+            </div>
+            <button class="edit-btn">Edit Time Slot</button>
+            <button class="add-btn">Add Time Slot</button>
+        </div>
+    }
+</div>

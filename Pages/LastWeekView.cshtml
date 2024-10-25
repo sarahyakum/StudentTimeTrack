@@ -1,10 +1,33 @@
 @page
-
 @{
+    Layout = "_Layout";
     ViewData["Title"] = "Last Week's View";
+
+    // Calculate the current date
+    var currentDate = DateTime.Today;
+
+    // Calculate the start of the previous week (Monday of last week)
+    var startOfLastWeek = currentDate.AddDays(-(int)currentDate.DayOfWeek - 6);
+
+    // Create an array for the days of the last week
+    var lastWeekDays = Enumerable.Range(0, 7)
+                                 .Select(i => startOfLastWeek.AddDays(i))
+                                 .ToArray();
 }
 
-<h1>Last Week's Time Tracking</h1>
-<!-- Placeholder for displaying time entries -->
-<p>Display time logged for last week here.</p>
-<button onclick="window.location.href='/TimeTracking'">Back to Time Tracking</button>
+<h2>Last Week's View</h2>
+
+<!-- Calendar Layout for Last Week -->
+<div class="calendar-container">
+    @foreach (var day in lastWeekDays)
+    {
+        <div class="day @(day == currentDate ? "current-day" : "")">
+            <div class="date">@day.ToString("dddd, MMM dd")</div>
+            <div class="time-entries">
+                <p>No time entries yet.</p>
+            </div>
+            <button class="edit-btn">Edit Time Slot</button>
+            <button class="add-btn">Add Time Slot</button>
+        </div>
+    }
+</div>
