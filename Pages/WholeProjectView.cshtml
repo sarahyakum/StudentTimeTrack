@@ -4,21 +4,12 @@
     Layout = "_Layout";
     ViewData["Title"] = "Whole Project View";
 
-    // Get current date
     var currentDate = DateTime.Today;
-
-    // Use the month and year from the model or default to current
-    int month = Model.SelectedMonth != 0 ? Model.SelectedMonth : currentDate.Month;
-    int year = Model.SelectedYear != 0 ? Model.SelectedYear : currentDate.Year;
-
-    // Create a DateTime for the first day of the selected month
+    int month = Model.SelectedMonth;
+    int year = Model.SelectedYear;
     DateTime firstDayOfMonth = new DateTime(year, month, 1);
     int daysInMonth = DateTime.DaysInMonth(year, month);
-    
-    // Create an array for the days of the month
-    var daysOfMonth = Enumerable.Range(1, daysInMonth)
-                                .Select(day => new DateTime(year, month, day))
-                                .ToArray();
+    var daysOfMonth = Enumerable.Range(1, daysInMonth).Select(day => new DateTime(year, month, day)).ToArray();
 }
 
 <h2>Whole Project View</h2>
@@ -33,17 +24,26 @@
     </form>
 </div>
 
-<!-- Calendar Layout for the Month -->
 <div class="calendar-container">
     @foreach (var day in daysOfMonth)
     {
+        var entriesForDay = Model.TimeSlots.Where(ts => ts.TSDate.Date == day.Date).ToList();
+
         <div class="day @(day == DateTime.Today ? "current-day" : "")">
             <div class="date">@day.ToString("dddd, MMM dd")</div>
             <div class="time-entries">
-                <p>No time entries yet.</p>
+                @if (entriesForDay.Any())
+                {
+                    @foreach (var entry in entriesForDay)
+                    {
+                        <div>@entry.TSDuration minutes - @entry.TSDescription</div>
+                    }
+                }
+                else
+                {
+                    <p>No time entries.</p>
+                }
             </div>
-            <button class="edit-btn">Edit Time Slot</button>
-            <button class="add-btn">Add Time Slot</button>
         </div>
     }
 </div>

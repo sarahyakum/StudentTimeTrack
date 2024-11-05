@@ -78,3 +78,14 @@
 /Users/KiaraVaz1/SeniorProject/StudentTimeTrack/obj/Debug/net8.0/StudentW.D7606799.Up2Date
 /Users/KiaraVaz1/SeniorProject/StudentTimeTrack/obj/Debug/net8.0/StudentWebApp.genruntimeconfig.cache
 /Users/KiaraVaz1/SeniorProject/StudentTimeTrack/obj/Debug/net8.0/ref/StudentWebApp.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.EntityFrameworkCore.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.EntityFrameworkCore.Relational.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.Extensions.Caching.Memory.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.Extensions.DependencyInjection.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.Extensions.Logging.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.Extensions.Logging.Abstractions.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Microsoft.Extensions.Options.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/MySqlConnector.dll
+/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/bin/Debug/net8.0/Pomelo.EntityFrameworkCore.MySql.dll

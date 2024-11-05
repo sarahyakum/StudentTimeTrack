@@ -18,6 +18,10 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = /Users/KiaraVaz1/SeniorProject/StudentTimeTrack
 build_property._RazorSourceGeneratorDebug = 
 
+[/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/ChangePassword.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ2hhbmdlUGFzc3dvcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

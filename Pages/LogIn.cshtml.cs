@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
 using MySql.Data.MySqlClient;
 using System.Data;
+using StudentTimeTrack.Data;
+using StudentTimeTrack.Models;
 
 namespace YourNamespace.Pages
 {
@@ -17,7 +20,6 @@ namespace YourNamespace.Pages
             {
                 connection.Open();
 
-                // Call the stored procedure for student login
                 string errorMessage;
                 using (var cmd = new MySqlCommand("check_student_login", connection))
                 {
@@ -37,7 +39,33 @@ namespace YourNamespace.Pages
 
                 if (errorMessage == "Success")
                 {
-                    return RedirectToPage("/WeeklyView"); // Redirect to student dashboard
+                    // Retrieve student's details
+                    Student student = null;
+                    using (var cmd = new MySqlCommand("SELECT StuNetID, StuUTDID, StuName FROM Student WHERE StuNetID = @NetId", connection))
+                    {
+                        cmd.Parameters.AddWithValue("@NetId", NetId);
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                student = new Student
+                                {
+                                    NetId = reader["StuNetID"].ToString(),
+                                    UtdId = reader["StuUTDID"].ToString(),
+                                    Name = reader["StuName"].ToString()
+                                };
+                            }
+                        }
+                    }
+
+                    // Store the student information in session
+                    HttpContext.Session.SetString("StudentNetId", student.NetId);
+                    HttpContext.Session.SetString("StudentUtdId", student.UtdId);
+                    HttpContext.Session.SetString("StudentName", student.Name);
+
+                    return RedirectToPage("/WeeklyView");
+                } else if (errorMessage == "Change password"){
+                    return RedirectToPage("/ChangePassword");
                 }
 
                 // Set error message to display
