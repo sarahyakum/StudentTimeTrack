@@ -48,6 +48,9 @@ body {
 
 .time-entries {
   margin-bottom: 1rem;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .time-entries p {
@@ -185,3 +188,4 @@ textarea {
   text-decoration: none;
   cursor: pointer;
 }
+

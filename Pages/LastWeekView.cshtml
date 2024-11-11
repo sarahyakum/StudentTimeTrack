@@ -3,6 +3,8 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Last Week's View";
+    string errorMessage = ViewData["ErrorMessage"] as string;
+    string TotalTime = Model.TotalTime;
 
     // Calculate the current date
     var currentDate = DateTime.Today;
@@ -14,14 +16,17 @@
     var lastWeekDays = Enumerable.Range(0, 7)
                                  .Select(i => startOfLastWeek.AddDays(i))
                                  .ToArray();
-    
+
     // Determine the last 3 days including the current day
     var editableDays = Enumerable.Range(0, 4) // Start from 0 to include the current day
                                   .Select(i => currentDate.AddDays(-i))
                                   .ToHashSet(); // Using HashSet for faster lookup
 }
 
-<h2>Last Week's View</h2>
+
+
+<link href="~/css/site.css" rel="stylesheet" />
+<h2>Last Week's View - Total Hours: @TotalTime</h2>
 
 <!-- Calendar Layout for Last Week -->
 <div class="calendar-container">
@@ -48,7 +53,7 @@
             @if (editableDays.Contains(day.Date)) // Check if the day is editable
             {
                 <button class="edit-btn" onclick="openEditPopup('@day.ToString("dddd, MMM dd")')">Edit Time Slot</button>
-                <button class="add-btn" onclick="openAddPopup('@day.ToString("dddd, MMM dd")')">Add Time Slot</button>
+                <button class="add-btn" onclick="openAddPopup('@day.ToString("yyyy-MM-dd")')">Add Time Slot</button>
             }
             else
             {
@@ -58,47 +63,33 @@
     }
 </div>
 
-<!-- Edit Popup -->
-<div id="editPopup" class="popup" style="display:none;">
-    <div class="popup-content">
-        <span class="close" onclick="closeEditPopup()">&times;</span>
-        <h3>Edit Time Entry for <span id="editDate"></span></h3>
-        <form method="post">
-            <div class="form-group">
-                <label for="editTime">Time (HH:MM):</label>
-                <input type="text" id="editTime" name="editTime" placeholder="HH:MM" required pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" title="Please enter a valid time in HH:MM format." />
-            </div>
-
-            <div class="form-group">
-                <label for="editDescription">Description:</label>
-                <textarea id="editDescription" name="editDescription" rows="3" required></textarea>
-            </div>
-
-            <div class="form-group">
-                <button type="submit" class="btn">Save Changes</button>
-            </div>
-        </form>
-    </div>
-</div>
+<style>
+    .time-entry {
+        word-wrap: break-word;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+</style>
 
 <!-- Add Popup -->
 <div id="addPopup" class="popup" style="display:none;">
     <div class="popup-content">
         <span class="close" onclick="closeAddPopup()">&times;</span>
         <h3>Add Time Entry for <span id="addDate"></span></h3>
-        <form method="post">
+        <form method="post" asp-page-handler="AddTimeSlot">
+            <input type="hidden" id="selectedDate" name="SelectedDate" />
             <div class="form-group">
                 <label for="addTime">Time (HH:MM):</label>
-                <input type="text" id="addTime" name="addTime" placeholder="HH:MM" required pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" title="Please enter a valid time in HH:MM format." />
+                <input type="text" id="addTime" name="AddTime" placeholder="HH:MM" required pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" title="Please enter a valid time in HH:MM format." />
             </div>
 
             <div class="form-group">
                 <label for="addDescription">Description:</label>
-                <textarea id="addDescription" name="addDescription" rows="3" required></textarea>
+                <textarea id="addDescription" name="AddDescription" rows="3" required></textarea>
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn">Add Entry</button>
+                <button type="submit" class="btn">Save Changes</button>
             </div>
         </form>
     </div>
@@ -118,6 +109,7 @@
     function openAddPopup(date) {
         document.getElementById("addPopup").style.display = "block";
         document.getElementById("addDate").textContent = date;  // Set the date in the add popup
+        document.getElementById("selectedDate").value = date; // Set the selected date in the hidden input field
     }
 
     function closeAddPopup() {

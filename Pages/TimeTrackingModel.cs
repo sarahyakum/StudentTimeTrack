@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace StudentWebApp.Pages
 {
-    public class TimeTrackingPageModel : PageModel
+    public class TimeTrackingModel : PageModel
     {
         public string? SuccessMessage { get; set; }
         public string? ErrorMessage { get; set; }

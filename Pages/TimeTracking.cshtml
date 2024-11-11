@@ -1,5 +1,5 @@
 @page
-@model TimeTrackingPageModel
+@model TimeTrackingModel
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Time Tracking Page";
@@ -36,10 +36,6 @@
         </form>
     </div>
 
-    <div class="button-container">
-        <a href="/WeeklyView" class="btn">Weekly View</a>
-        <button class="btn" onclick="openEditPopup()">Edit</button>
-    </div>
 
     <div class="message">
         @if (Model.SuccessMessage != null)

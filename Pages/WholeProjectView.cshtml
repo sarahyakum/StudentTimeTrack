@@ -4,6 +4,7 @@
     Layout = "_Layout";
     ViewData["Title"] = "Whole Project View";
 
+    string TotalTime = Model.TotalTime;
     var currentDate = DateTime.Today;
     int month = Model.SelectedMonth;
     int year = Model.SelectedYear;
@@ -12,7 +13,7 @@
     var daysOfMonth = Enumerable.Range(1, daysInMonth).Select(day => new DateTime(year, month, day)).ToArray();
 }
 
-<h2>Whole Project View</h2>
+<h2>Whole Project View - Total Hours: @TotalTime </h2>
 
 <div class="month-navigation">
     <form method="get">
