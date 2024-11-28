@@ -23,10 +23,16 @@
                                   .ToHashSet(); // Using HashSet for faster lookup
 }
 
-
-
 <link href="~/css/site.css" rel="stylesheet" />
 <h2>Last Week's View - Total Hours: @TotalTime</h2>
+
+<!-- Error Message Display (Red Square) -->
+@if (!string.IsNullOrEmpty(errorMessage) && errorMessage != "Success")
+{
+    <div class="error-message">
+        <p>@errorMessage</p>
+    </div>
+}
 
 <!-- Calendar Layout for Last Week -->
 <div class="calendar-container">
@@ -61,9 +67,20 @@
                     <p>No time entries yet.</p>
                 }
             </div>
-            @if (editableDays.Contains(day.Date)) // Check if the day is editable
+
+            <!-- Disable Edit Button if no Time Slot -->
+            @if (editableDays.Contains(day.Date) && Model.TimeSlots.Any(ts => ts.TSDate.Date == day.Date))
             {
                 <button class="edit-btn" onclick="openEditPopup('@day.ToString("dddd, MMM dd")')">Edit Time Slot</button>
+            }
+            else
+            {
+                <button class="edit-btn" disabled>Edit Time Slot</button>
+                <p class="info-text">Editing is disabled for this date.</p>
+            }
+
+            @if (editableDays.Contains(day.Date)) // Check if the day is editable
+            {
                 <button class="add-btn" onclick="openAddPopup('@day.ToString("yyyy-MM-dd")')">Add Time Slot</button>
             }
             else
@@ -106,24 +123,62 @@
     </div>
 </div>
 
-<!-- JavaScript for Popups -->
+<!-- Edit Popup -->
+<div id="editPopup" class="popup" style="display:none;">
+    <div class="popup-content">
+        <span class="close" onclick="closeEditPopup()">&times;</span>
+        <h3>Edit Time Entry for <span id="editDate"></span></h3>
+        <form method="post" asp-page-handler="EditTimeSlot">
+            <input type="hidden" id="editDateInput" name="SelectedDate" />
+            <div class="form-group">
+                <label for="editTime">Time (HH:MM):</label>
+                <input type="text" id="editTime" name="UpdatedTime" placeholder="HH:MM" required 
+                       pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" 
+                       title="Please enter a valid time in HH:MM format." />
+            </div>
+            <div class="form-group">
+                <label for="editDescription">Description:</label>
+                <textarea id="editDescription" name="UpdatedDescription" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript for Popup -->
 <script>
     function openEditPopup(date) {
-        document.getElementById("editPopup").style.display = "block";
-        document.getElementById("editDate").textContent = date;  // Set the date in the edit popup
-    }
+            document.getElementById("editDate").textContent = date;
+            document.getElementById("editDateInput").value = date;
+            document.getElementById("editPopup").style.display = "block";
+        }
 
-    function closeEditPopup() {
-        document.getElementById("editPopup").style.display = "none";
-    }
+        function closeEditPopup() {
+            document.getElementById("editPopup").style.display = "none";
+        }
 
     function openAddPopup(date) {
         document.getElementById("addPopup").style.display = "block";
-        document.getElementById("addDate").textContent = date;  // Set the date in the add popup
-        document.getElementById("selectedDate").value = date; // Set the selected date in the hidden input field
+        document.getElementById("addDate").textContent = date;  
+        document.getElementById("selectedDate").value = date; 
     }
 
     function closeAddPopup() {
         document.getElementById("addPopup").style.display = "none";
     }
 </script>
+
+<style>
+    .error-message {
+    background-color: rgb(233, 167, 167);
+    border-color: rgb(214, 87, 87);
+    color: rgb(0, 0, 0);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+}
+</style>
