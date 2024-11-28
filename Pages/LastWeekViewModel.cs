@@ -89,8 +89,10 @@ public class LastWeekViewModel : PageModel
         {
             connection.Open();
 
-            DateTime endDate = DateTime.Today.AddDays(-((int)DateTime.Today.DayOfWeek + 1));
-            DateTime startDate = endDate.AddDays(-6);
+        
+            DateTime endDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1); // Sunday
+            DateTime startDate = endDate.AddDays(-6); // Monday of the previous week
+
 
             using (var cmd = new MySqlCommand("student_timeslot_by_week", connection))
             {

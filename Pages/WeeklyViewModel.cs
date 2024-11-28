@@ -89,7 +89,8 @@ public class WeeklyViewModel : PageModel
         {
             connection.Open();
 
-            DateTime startDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+            DateTime startDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);  // Sunday as the first day of the week
+
             DateTime endDate = startDate.AddDays(6);
 
             using (var cmd = new MySqlCommand("student_timeslot_by_week", connection))

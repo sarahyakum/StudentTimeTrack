@@ -68,8 +68,10 @@
             <!-- Only show buttons within the allowed date range -->
             @if (isWithinAllowedRange)
             {
-                <button class="edit-btn" onclick="openEditPopup('@day.ToString("dddd, MMM dd")')">Edit Time Slot</button>
-                <button class="add-btn" onclick="openAddPopup('@day.ToString("dddd, MMM dd")')">Add Time Slot</button>
+                <!-- Disable edit button if no time slots exist for the day -->
+                <button class="edit-btn" onclick="openEditPopup('@day.ToString("dddd, MMM dd")')" @(timeSlotsForDay.Any() ? "" : "disabled")>Edit Time Slot</button>
+                <!-- Disable add button if time slots already exist for the day -->
+                <button class="add-btn" onclick="openAddPopup('@day.ToString("dddd, MMM dd")')" @(timeSlotsForDay.Any() ? "disabled" : "")>Add Time Slot</button>
             }
             else
             {

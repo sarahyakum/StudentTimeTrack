@@ -35,6 +35,7 @@ using System.Data;
 
                 using (var connection = new MySqlConnection(connectionString))
                 {
+                    Console.WriteLine("Open Connection");
                     connection.Open();
 
                     string errorMessage;
