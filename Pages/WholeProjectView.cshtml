@@ -11,6 +11,12 @@
     DateTime firstDayOfMonth = new DateTime(year, month, 1);
     int daysInMonth = DateTime.DaysInMonth(year, month);
     var daysOfMonth = Enumerable.Range(1, daysInMonth).Select(day => new DateTime(year, month, day)).ToArray();
+
+    // Get the project start and end dates
+    DateTime projectStartDate = Model.ProjectStartDate;
+    DateTime projectEndDate = Model.ProjectEndDate;
+    bool isBeforeProjectStart = new DateTime(year, month, 1) < projectStartDate;
+    bool isAfterProjectEnd = new DateTime(year, month, 1) >= projectEndDate;
 }
 
 <h2>Whole Project View - Total Hours: @TotalTime </h2>
@@ -19,9 +25,9 @@
     <form method="get">
         <input type="hidden" name="year" value="@year" />
         <input type="hidden" name="month" value="@month" />
-        <button name="change" value="prev">&lt; Previous Month</button>
+        <button name="change" value="prev" @(isBeforeProjectStart ? "disabled" : "")>&lt; Previous Month</button>
         <h3>@firstDayOfMonth.ToString("MMMM yyyy")</h3>
-        <button name="change" value="next">Next Month &gt;</button>
+        <button name="change" value="next" @(isAfterProjectEnd ? "disabled" : "")>Next Month &gt;</button>
     </form>
 </div>
 
@@ -30,14 +36,37 @@
     {
         var entriesForDay = Model.TimeSlots.Where(ts => ts.TSDate.Date == day.Date).ToList();
 
-        <div class="day @(day == DateTime.Today ? "current-day" : "")">
+        // Determine if the current day is the project start or end date
+        string dayClass = "";
+        if (day.Date == projectStartDate)
+        {
+            dayClass = "highlight-start-end";
+        }
+        else if (day.Date == projectEndDate)
+        {
+            dayClass = "highlight-start-end";
+        }
+
+        <div class="day @(day == DateTime.Today ? "current-day" : "") @dayClass">
             <div class="date">@day.ToString("dddd, MMM dd")</div>
             <div class="time-entries">
                 @if (entriesForDay.Any())
                 {
                     @foreach (var entry in entriesForDay)
                     {
-                        <div>@entry.TSDuration minutes - @entry.TSDescription</div>
+                        <div>
+                            @{
+                                // Assuming TSDuration is in minutes as a double (e.g., 90.5 minutes)
+                                double totalMinutes = entry.TSDuration;
+                                int hours = (int)(totalMinutes / 60);
+                                int minutes = (int)(totalMinutes % 60);
+
+                                // Format the time as HH:MM
+                                string timeFormatted = $"{hours:D2}:{minutes:D2}";
+                            }
+                            <p><strong>Time:</strong> @timeFormatted </p>
+                            <p><strong>Description:</strong> @entry.TSDescription</p>
+                        </div>
                     }
                 }
                 else

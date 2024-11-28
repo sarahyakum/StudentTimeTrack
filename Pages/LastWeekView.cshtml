@@ -40,7 +40,18 @@
                     @foreach (var entry in Model.TimeSlots.Where(ts => ts.TSDate.Date == day.Date))
                     {
                         <div class="time-entry">
-                            <p><strong>Time:</strong> @entry.TSDuration</p>
+                            <p><strong>Time:</strong>
+                                @{
+                                    // Assuming TSDuration is in minutes as a double (e.g., 90.5 minutes)
+                                    double totalMinutes = entry.TSDuration;
+                                    int hours = (int)(totalMinutes / 60);
+                                    int minutes = (int)(totalMinutes % 60);
+
+                                    // Format the time as HH:MM
+                                    string timeFormatted = $"{hours:D2}:{minutes:D2}";
+                                }
+                                @timeFormatted
+                            </p>
                             <p><strong>Description:</strong> @entry.TSDescription</p>
                         </div>
                     }

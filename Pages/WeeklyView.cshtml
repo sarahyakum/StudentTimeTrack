@@ -14,8 +14,8 @@
 
     // Create an array for the days of the week
     var daysOfWeek = Enumerable.Range(0, 7)
-                               .Select(i => startOfWeek.AddDays(i))
-                               .ToArray();
+    .Select(i => startOfWeek.AddDays(i))
+    .ToArray();
 
     // Set the allowed date range (current date and up to 3 days prior)
     var allowedDateRangeStart = currentDate.AddDays(-3);
@@ -36,15 +36,25 @@
                 @{
                     // Find time slots for the current day
                     var timeSlotsForDay = Model.TimeSlots
-                        .Where(ts => ts.TSDate.Date == day.Date)
-                        .ToList();
+                    .Where(ts => ts.TSDate.Date == day.Date)
+                    .ToList();
                 }
                 @if (timeSlotsForDay.Any())
-                {
-                    @foreach (var timeSlot in timeSlotsForDay)
+                {@foreach (var timeSlot in timeSlotsForDay)
                     {
                         <div class="time-entry">
-                            <p><strong>Time:</strong> @timeSlot.TSDuration</p>
+                            <p><strong>Time:</strong>
+                                @{
+                                    // Assuming TSDuration is in minutes as a double (e.g., 90.5 minutes)
+                                    double totalMinutes = timeSlot.TSDuration;
+                                    int hours = (int)(totalMinutes / 60);
+                                    int minutes = (int)(totalMinutes % 60);
+
+                                    // Format the time as HH:MM
+                                    string timeFormatted = $"{hours:D2}:{minutes:D2}";
+                                }
+                                @timeFormatted
+                            </p>
                             <p><strong>Description:</strong> @timeSlot.TSDescription</p>
                         </div>
                     }
@@ -59,7 +69,7 @@
             @if (isWithinAllowedRange)
             {
                 <button class="edit-btn" onclick="openEditPopup('@day.ToString("dddd, MMM dd")')">Edit Time Slot</button>
-                <button class="add-btn"onclick="openAddPopup('@day.ToString("dddd, MMM dd")')"> Add Time Slot </button>
+                <button class="add-btn" onclick="openAddPopup('@day.ToString("dddd, MMM dd")')">Add Time Slot</button>
             }
             else
             {
@@ -77,7 +87,8 @@
         <form method="post">
             <div class="form-group">
                 <label for="editTime">Time (HH:MM):</label>
-                <input type="text" id="editTime" name="editTime" placeholder="HH:MM" required pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" title="Please enter a valid time in HH:MM format." />
+                <input type="text" id="editTime" name="editTime" placeholder="HH:MM" required
+                    pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" title="Please enter a valid time in HH:MM format." />
             </div>
 
             <div class="form-group">
@@ -101,7 +112,8 @@
             <input type="hidden" id="selectedDate" name="SelectedDate" />
             <div class="form-group">
                 <label for="addTime">Time (HH:MM):</label>
-                <input type="text" id="addTime" name="addTime" placeholder="HH:MM" required pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" title="Please enter a valid time in HH:MM format." />
+                <input type="text" id="addTime" name="addTime" placeholder="HH:MM" required
+                    pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" title="Please enter a valid time in HH:MM format." />
             </div>
 
             <div class="form-group">

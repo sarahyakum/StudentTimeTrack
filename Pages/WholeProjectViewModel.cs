@@ -13,6 +13,10 @@ public class WholeProjectViewModel : PageModel
     public int SelectedYear { get; set; } = DateTime.Today.Year;
     public List<TimeSlot> TimeSlots { get; set; } = new List<TimeSlot>();
 
+    // Added properties for Start and End Dates of the project
+    public DateTime ProjectStartDate { get; set; }
+    public DateTime ProjectEndDate { get; set; }
+
     public void OnGet(int month = 0, int year = 0, string change = null)
     {
         // Update month and year based on navigation
@@ -49,11 +53,11 @@ public class WholeProjectViewModel : PageModel
         }
 
         LoadTimeSlots(); // Call the method to load time slots
+        GetTimeFrame();  // Get the start and end dates of the project
     }
 
     private void GetTimeFrame()
     {
-
         string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; // Update as needed
 
         // Retrieve stuNetID from the session
@@ -70,11 +74,43 @@ public class WholeProjectViewModel : PageModel
         using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open();
-            //Get the students section 
-            //
 
+            // Get the student's section code
+            string sectionCode = null;
+            using (var cmd = new MySqlCommand("SELECT SecCode FROM MemberOf WHERE StuNetID = @StuNetID", connection))
+            {
+                cmd.Parameters.AddWithValue("@StuNetID", stuNetID);
+
+                var result = cmd.ExecuteScalar();
+                sectionCode = result?.ToString();
+            }
+
+            if (string.IsNullOrEmpty(sectionCode))
+            {
+                Console.WriteLine("Error: Section code not found for the student.");
+                return; // Exit if no section code found
+            }
+
+            // Now retrieve the project start and end dates using the section code
+            using (var cmd = new MySqlCommand("get_section_timeframe", connection))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@section_code", sectionCode);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        ProjectStartDate = reader.GetDateTime(0); // StartDate
+                        ProjectEndDate = reader.GetDateTime(1);   // EndDate
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: No timeframe found for the section code.");
+                    }
+                }
+            }
         }
-
     }
 
     private void LoadTimeSlots()
@@ -111,19 +147,8 @@ public class WholeProjectViewModel : PageModel
 
                     while (reader.Read())
                     {
-                        // Assuming your result set has the following columns:
-                        // 0: StuNetID, 1: StudentName, 2: TSDate, 3: TSDescription, 4: TSDuration
-
-                        // Log the raw data retrieved from the reader
-                        // Console.WriteLine("StuNetID: " + reader.GetString(0));
-                        // Console.WriteLine("StudentName: " + reader.GetString(1));
-                        // Console.WriteLine("Date: " + reader.GetDateTime(2).ToShortDateString());
-                        // Console.WriteLine("Description: " + reader.GetString(3));
-                        // Console.WriteLine("Duration: " + reader.GetString(4));
-
                         string durationString = reader.GetString(4); // Change the index based on your actual schema
                         string descriptionString = reader.GetString(3);
-
 
                         // Parse the duration string "HH:MM" into total minutes
                         string[] timeParts = durationString.Split(':');
@@ -138,7 +163,6 @@ public class WholeProjectViewModel : PageModel
                             TSDate = reader.GetDateTime(2),
                             TSDescription = descriptionString,
                             TSDuration = totalMinutes // Store in minutes or use as needed
-
                         };
 
                         TimeSlots.Add(timeSlot); // Add to your model's time slots list
@@ -171,12 +195,8 @@ public class WholeProjectViewModel : PageModel
 
                 Console.WriteLine("Total (HH:MM): " + TotalTime);
             }
-
-
-
         }
     }
-
 }
 
 public class TimeSlot
@@ -187,4 +207,3 @@ public class TimeSlot
     public string TSDescription { get; set; }
     public double TSDuration { get; set; }
 }
-
