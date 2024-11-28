@@ -20,6 +20,8 @@
 }
 
 <h2>Whole Project View - Total Hours: @TotalTime </h2>
+<link rel="stylesheet" href="~/css/popupentry.css" />
+
 
 <div class="month-navigation">
     <form method="get">
@@ -36,16 +38,7 @@
     {
         var entriesForDay = Model.TimeSlots.Where(ts => ts.TSDate.Date == day.Date).ToList();
 
-        // Determine if the current day is the project start or end date
-        string dayClass = "";
-        if (day.Date == projectStartDate)
-        {
-            dayClass = "highlight-start-end";
-        }
-        else if (day.Date == projectEndDate)
-        {
-            dayClass = "highlight-start-end";
-        }
+        string dayClass = day.Date == projectStartDate || day.Date == projectEndDate ? "highlight-start-end" : "";
 
         <div class="day @(day == DateTime.Today ? "current-day" : "") @dayClass">
             <div class="date">@day.ToString("dddd, MMM dd")</div>
@@ -54,18 +47,17 @@
                 {
                     @foreach (var entry in entriesForDay)
                     {
-                        <div>
-                            @{
-                                // Assuming TSDuration is in minutes as a double (e.g., 90.5 minutes)
-                                double totalMinutes = entry.TSDuration;
-                                int hours = (int)(totalMinutes / 60);
-                                int minutes = (int)(totalMinutes % 60);
+                        double totalMinutes = entry.TSDuration;
+                        int hours = (int)(totalMinutes / 60);
+                        int minutes = (int)(totalMinutes % 60);
+                        string timeFormatted = $"{hours:D2}:{minutes:D2}";
+                        string truncatedDescription = entry.TSDescription.Length > 50
+                            ? entry.TSDescription.Substring(0, 50) + "..."
+                            : entry.TSDescription;
 
-                                // Format the time as HH:MM
-                                string timeFormatted = $"{hours:D2}:{minutes:D2}";
-                            }
-                            <p><strong>Time:</strong> @timeFormatted </p>
-                            <p><strong>Description:</strong> @entry.TSDescription</p>
+                        <div class="timeslot-entry" onclick="openPopup('@entry.TSDescription')">
+                            <p><strong>Time:</strong> @timeFormatted</p>
+                            <p><strong>Description:</strong> @truncatedDescription</p>
                         </div>
                     }
                 }
@@ -77,3 +69,35 @@
         </div>
     }
 </div>
+
+<div class="popup-entry">
+    <div class="popup-content">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <p><strong>Time:</strong> <span id="popup-time"></span></p>
+        <p><strong>Description:</strong> <span id="popup-description"></span></p>
+    </div>
+</div>
+
+
+<div id="popupOverlay" class="popup-overlay" onclick="closePopup()"></div>
+
+   <script>
+        function openPopup(description) {
+            const popup = document.querySelector(".popup-entry");
+            const overlay = document.querySelector(".popup-overlay");
+            const descriptionElement = document.getElementById("popup-description");
+            
+            descriptionElement.textContent = description;
+            popup.classList.add("show");
+            overlay.style.display = "block";
+        }
+
+        function closePopup() {
+            const popup = document.querySelector(".popup-entry");
+            const overlay = document.querySelector(".popup-overlay");
+            
+            popup.classList.remove("show");
+            overlay.style.display = "none";
+        }
+    </script>
+

@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StudentWebApp.styles.css" asp-append-version="true" />
+
+    <!-- Render the Styles section if it exists -->
+    @RenderSection("Styles", false)
 </head>
 <body>
     <header>

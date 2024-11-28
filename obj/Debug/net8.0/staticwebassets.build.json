@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "YdmdZvvXtbFSPHnxGrQqABkjjCplQJ9w8U3yFyrcv/A=",
+  "Hash": "1XZMFGhR3I4FFKfF4K3URiQ1dx0Fl0fwtph304S35B8=",
   "Source": "StudentWebApp",
   "BasePath": "_content/StudentWebApp",
   "Mode": "Default",
@@ -72,6 +72,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/css/login.css"
+    },
+    {
+      "Identity": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/popupentry.css",
+      "SourceId": "StudentWebApp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/",
+      "BasePath": "_content/StudentWebApp",
+      "RelativePath": "css/popupentry.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/popupentry.css"
     },
     {
       "Identity": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/site.css",

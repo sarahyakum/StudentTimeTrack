@@ -74,6 +74,57 @@ public class WeeklyViewModel : PageModel
         LoadCurrentWeekTimeSlots();
     }
 
+    // WeeklyViewModel.cs
+public void OnPostEditTimeSlot(string SelectedDate, string UpdatedTime, string UpdatedDescription)
+{
+    string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; // Update as needed
+    string stuNetID = HttpContext.Session.GetString("StudentNetId");
+
+    // Validate if the student ID is null or empty
+    if (string.IsNullOrEmpty(stuNetID))
+    {
+        Console.WriteLine("Error: StudentNetId not found in session.");
+        return;
+    }
+
+    string statusMessage = "Success";  // Default to success message
+
+    using (var connection = new MySqlConnection(connectionString))
+    {
+        connection.Open();
+
+        // Call the stored procedure for editing a time slot
+        using (var cmd = new MySqlCommand("student_edit_timeslot", connection))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            // Parameters for the stored procedure
+            cmd.Parameters.AddWithValue("@student_netID", stuNetID);
+            cmd.Parameters.AddWithValue("@ts_date", DateTime.Parse(SelectedDate));
+            cmd.Parameters.AddWithValue("@updated_description", UpdatedDescription);
+            cmd.Parameters.AddWithValue("@updated_duration", UpdatedTime); // Assumed in HH:MM format
+
+            // Variable to hold status or error message
+            var statusParam = new MySqlParameter("@error_message", MySqlDbType.VarChar, 255);
+            statusParam.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(statusParam);
+
+            cmd.ExecuteNonQuery();
+
+            // Capture the status message from the output parameter
+            statusMessage = statusParam.Value.ToString();
+            Console.WriteLine("Stored Procedure Status: " + statusMessage);
+        }
+    }
+
+    // Pass the status message to the view (error message from stored procedure)
+    ViewData["ErrorMessage"] = statusMessage;
+
+    // Reload the time slots after the update
+    LoadCurrentWeekTimeSlots();
+}
+
+
     private void LoadCurrentWeekTimeSlots()
     {
         string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";

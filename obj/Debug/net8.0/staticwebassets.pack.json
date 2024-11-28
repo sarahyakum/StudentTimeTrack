@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets/css/login.css"
     },
     {
+      "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/popupentry.css",
+      "PackagePath": "staticwebassets/css/popupentry.css"
+    },
+    {
       "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
     },
