@@ -64,7 +64,9 @@ namespace YourNamespace.Pages
                     HttpContext.Session.SetString("StudentName", student.Name);
 
                     return RedirectToPage("/WeeklyView");
-                } else if (errorMessage == "Change password"){
+                } 
+                
+                else if (errorMessage == "Change password"){
                     return RedirectToPage("/ChangePassword");
                 }
 

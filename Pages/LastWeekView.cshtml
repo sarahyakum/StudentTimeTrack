@@ -10,7 +10,7 @@
     var currentDate = DateTime.Today;
 
     // Calculate the start of the previous week (Monday of last week)
-    var startOfLastWeek = currentDate.AddDays(-(int)currentDate.DayOfWeek - 6);
+    var startOfLastWeek = currentDate.AddDays(-(int)currentDate.DayOfWeek - 7);
 
     // Create an array for the days of the last week
     var lastWeekDays = Enumerable.Range(0, 7)
@@ -57,7 +57,7 @@
             }
             else
             {
-                <p>Editing not allowed.</p>
+                <p class="info-text">Adding/editing time slots is disabled for this date.</p>
             }
         </div>
     }

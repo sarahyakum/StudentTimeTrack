@@ -4,8 +4,11 @@ namespace StudentTimeTrack.Models
 {
     public class Student
     {
-        public string NetId { get; set; }
-        public string UtdId { get; set; }
-        public string Name { get; set; }
+        public string NetId { get; set; } = string.Empty;
+        public string UtdId { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string Section { get; set; } = string.Empty;
+        public string TeamNum { get; set; } = string.Empty;
     }
 }

@@ -9,64 +9,69 @@ public class WeeklyViewModel : PageModel
     public List<TimeSlot> TimeSlots { get; set; } = new List<TimeSlot>();
     public string TotalTime { get; set; }
 
-    [BindProperty]
-    public string NewTime { get; set; }
+    public string ErrorMessage { get; set; }
 
+    // Properties for adding or editing time slots
     [BindProperty]
-    public string NewDescription { get; set; }
-
+    public string AddTime { get; set; }
     [BindProperty]
-    public DateTime NewDate { get; set; }
+    public string AddDescription { get; set; }
+    [BindProperty]
+    public DateTime SelectedDate { get; set; } // Selected date from the calendar
 
     public void OnGet()
     {
         LoadCurrentWeekTimeSlots();
     }
 
-    public IActionResult OnPostAddTimeSlot()
+    public void OnPostAddTimeSlot(string SelectedDate, string AddTime, string AddDescription)
     {
-        // Get the student NetID from the session or other sources
+        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; // Update as needed
         string stuNetID = HttpContext.Session.GetString("StudentNetId");
-        string errorMessage;
 
-        // Call the stored procedure to insert the time slot
-        using (var connection = new MySqlConnection("server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"))
+        // Validate if the student ID is null or empty
+        if (string.IsNullOrEmpty(stuNetID))
+        {
+            Console.WriteLine("Error: StudentNetId not found in session.");
+            return;
+        }
+
+        string statusMessage = "Success";  // Default to success message
+
+        using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open();
 
+            // Call the stored procedure for adding a time slot
             using (var cmd = new MySqlCommand("student_insert_timeslot", connection))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@student_netID", stuNetID);
-                cmd.Parameters.AddWithValue("@ts_date", NewDate);
-                cmd.Parameters.AddWithValue("@ts_description", NewDescription);
-                cmd.Parameters.AddWithValue("@ts_duration", NewTime); // Assume NewTime is in "HH:MM" format
+                Console.WriteLine("Passing Parameters");
 
-                MySqlParameter outParameter = new MySqlParameter("@error_message", MySqlDbType.VarChar, 100)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(outParameter);
+                // Parameters for the stored procedure
+                cmd.Parameters.AddWithValue("@student_netID", stuNetID);
+                cmd.Parameters.AddWithValue("@ts_date", DateTime.Parse(SelectedDate));
+                cmd.Parameters.AddWithValue("@ts_description", AddDescription);
+                cmd.Parameters.AddWithValue("@ts_duration", AddTime); // Assumed in HH:MM format
+
+                // Variable to hold status or error message
+                var statusParam = new MySqlParameter("@error_message", MySqlDbType.VarChar, 255);
+                statusParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(statusParam);
 
                 cmd.ExecuteNonQuery();
 
-                // Get the output parameter (error message or success)
-                errorMessage = outParameter.Value.ToString();
+                // Capture the status message from the output parameter
+                statusMessage = statusParam.Value.ToString();
+                Console.WriteLine("Stored Procedure Status: " + statusMessage);
             }
         }
 
-        if (errorMessage == "Success")
-        {
-            // Reload the time slots after successfully adding a new one
-            LoadCurrentWeekTimeSlots();
-            return RedirectToPage();  // Reload the page after success
-        }
-        else
-        {
-            // Handle error (e.g., show message to user)
-            ModelState.AddModelError(string.Empty, errorMessage);
-            return Page(); // Keep the user on the same page if an error occurs
-        }
+        // Pass the status message to the view (error message from stored procedure)
+        ViewData["ErrorMessage"] = statusMessage;
+
+        // Reload the time slots after the insertion
+        LoadCurrentWeekTimeSlots();
     }
 
     private void LoadCurrentWeekTimeSlots()
@@ -148,6 +153,6 @@ public class WeeklyViewModel : PageModel
         }
 
 
-        
+
     }
 }

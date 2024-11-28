@@ -5,12 +5,20 @@
       "PackagePath": "staticwebassets/StudentWebApp.bundle.scp.css"
     },
     {
+      "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/login.css",
+      "PackagePath": "staticwebassets/css/login.css"
+    },
+    {
       "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
     },
     {
       "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/styles.css",
       "PackagePath": "staticwebassets/css/styles.css"
+    },
+    {
+      "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/weekly.css",
+      "PackagePath": "staticwebassets/css/weekly.css"
     },
     {
       "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/favicon.ico",

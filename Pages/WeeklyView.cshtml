@@ -3,12 +3,14 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Weekly View";
+    string errorMessage = ViewData["ErrorMessage"] as string;
     string TotalTime = Model.TotalTime;
+
     // Calculate the current date
     var currentDate = DateTime.Today;
 
     // Calculate the start of the week (Monday)
-    var startOfWeek = currentDate.AddDays(-(int)currentDate.DayOfWeek + 1);
+    var startOfWeek = currentDate.AddDays(-(int)currentDate.DayOfWeek);
 
     // Create an array for the days of the week
     var daysOfWeek = Enumerable.Range(0, 7)
@@ -95,7 +97,8 @@
     <div class="popup-content">
         <span class="close" onclick="closeAddPopup()">&times;</span>
         <h3>Add Time Entry for <span id="addDate"></span></h3>
-        <form method="post">
+        <form method="post" asp-page-handler="AddTimeSlot">
+            <input type="hidden" id="selectedDate" name="SelectedDate" />
             <div class="form-group">
                 <label for="addTime">Time (HH:MM):</label>
                 <input type="text" id="addTime" name="addTime" placeholder="HH:MM" required pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" title="Please enter a valid time in HH:MM format." />
@@ -127,6 +130,7 @@
     function openAddPopup(date) {
         document.getElementById("addPopup").style.display = "block";
         document.getElementById("addDate").textContent = date;  // Set the date in the popup
+        document.getElementById("selectedDate").value = date; // Set the selected date in the hidden input field
     }
 
     function closeAddPopup() {
