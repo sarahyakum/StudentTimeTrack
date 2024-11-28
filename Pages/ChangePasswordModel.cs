@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MySql.Data.MySqlClient;
 using System.Data;
-using StudentTimeTrack.Models;
 
     public class ChangePasswordModel : PageModel
     {
@@ -17,6 +16,7 @@ using StudentTimeTrack.Models;
 
         public IActionResult OnPost(string OldPassword, string NewPassword, string ConfirmPassword)
         {
+            
             if (NewPassword != ConfirmPassword) 
             {
                 ErrorMessage = "Passwords Do Not Match. Try Again.";
@@ -25,8 +25,9 @@ using StudentTimeTrack.Models;
             else 
             {
                 string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; 
-                string? NetId = HttpContext.Session.GetString("StudentNetId");
-                if (string.IsNullOrEmpty(NetId))
+                string stuNetID = HttpContext.Session.GetString("StudentNetId");
+
+                if (string.IsNullOrEmpty(stuNetID))
                 {
                     ErrorMessage = "Session expired or invalid. Please log in again.";
                     return RedirectToPage("/Login");
@@ -40,7 +41,7 @@ using StudentTimeTrack.Models;
                     using (var cmd = new MySqlCommand("change_student_password", connection))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@stu_username", NetId);
+                        cmd.Parameters.AddWithValue("@stu_username", stuNetID);
                         cmd.Parameters.AddWithValue("@old_student_password", OldPassword);
                         cmd.Parameters.AddWithValue("@new_student_password", NewPassword);
                         var errorParam = new MySqlParameter("@error_message", MySqlDbType.VarChar)
@@ -50,8 +51,10 @@ using StudentTimeTrack.Models;
                         };
                         cmd.Parameters.Add(errorParam);
 
+                        Console.WriteLine("Excecuting change_student_password");
                         cmd.ExecuteNonQuery();
                         errorMessage = errorParam.Value.ToString() ?? string.Empty;
+                        Console.WriteLine(errorMessage);
                     }
 
                     if (errorMessage == "Success")
@@ -60,7 +63,7 @@ using StudentTimeTrack.Models;
                         Student? student = null;
                         using (var cmd = new MySqlCommand("SELECT StuPassword FROM Student WHERE StuNetID = @NetId", connection))
                         {
-                            cmd.Parameters.AddWithValue("@NetId", NetId);
+                            cmd.Parameters.AddWithValue("@NetId", stuNetID);
                             using (var reader = cmd.ExecuteReader())
                             {
                                 if (reader.Read())

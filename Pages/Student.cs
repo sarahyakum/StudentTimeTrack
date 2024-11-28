@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace StudentTimeTrack.Models
-{
     public class Student
     {
         public string NetId { get; set; } = string.Empty;
@@ -11,4 +9,3 @@ namespace StudentTimeTrack.Models
         public string Section { get; set; } = string.Empty;
         public string TeamNum { get; set; } = string.Empty;
     }
-}

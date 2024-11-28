@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using StudentTimeTrack.Models;
+
 
 namespace StudentTimeTrack.Data
 {

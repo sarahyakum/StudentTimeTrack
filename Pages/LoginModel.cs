@@ -4,11 +4,8 @@ using Microsoft.AspNetCore.Http;
 using MySql.Data.MySqlClient;
 using System.Data;
 using StudentTimeTrack.Data;
-using StudentTimeTrack.Models;
 
-namespace YourNamespace.Pages
-{
-    public class LogInModel : PageModel
+    public class LoginModel : PageModel
     {
         public string ErrorMessage { get; set; }
 
@@ -77,4 +74,4 @@ namespace YourNamespace.Pages
             return Page(); // Return to the login page with error message
         }
     }
-}
+
