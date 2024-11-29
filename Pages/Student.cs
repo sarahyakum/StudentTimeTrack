@@ -1,3 +1,6 @@
+// Written by Kiara Vaz for CS4385.0W1, , Senior Design Project, Started October 3, 2024
+// Net ID: KMV200000
+
 using System.ComponentModel.DataAnnotations;
 
     public class Student

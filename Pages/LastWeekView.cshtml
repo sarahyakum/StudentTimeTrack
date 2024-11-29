@@ -1,5 +1,9 @@
 @page
 @model LastWeekViewModel
+
+<!-- Written by Kiara Vaz for CS4385.0W1, , Senior Design Project, Started October 3, 2024 -->
+<!-- Net ID: KMV200000 -->
+
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Last Week's View";
@@ -34,22 +38,31 @@
     </div>
 }
 
-<!-- Calendar Layout for Last Week -->
+<!-- Calendar Layout -->
 <div class="calendar-container">
     @foreach (var day in lastWeekDays)
     {
+        // Check if the day is within the allowed range (today and up to 3 days before)
+        var isWithinAllowedRange = day >= currentDate.AddDays(-3) && day <= currentDate;
+
         <div class="day @(day == currentDate ? "current-day" : "")">
             <div class="date">@day.ToString("dddd, MMM dd")</div>
             <div class="time-entries">
-                @if (Model.TimeSlots.Any(ts => ts.TSDate.Date == day.Date))
+                @{
+                    // Find time slots for the current day
+                    var timeSlotsForDay = Model.TimeSlots
+                    .Where(ts => ts.TSDate.Date == day.Date)
+                    .ToList();
+                }
+                @if (timeSlotsForDay.Any())
                 {
-                    @foreach (var entry in Model.TimeSlots.Where(ts => ts.TSDate.Date == day.Date))
+                    @foreach (var timeSlot in timeSlotsForDay)
                     {
                         <div class="time-entry">
                             <p><strong>Time:</strong>
                                 @{
                                     // Assuming TSDuration is in minutes as a double (e.g., 90.5 minutes)
-                                    double totalMinutes = entry.TSDuration;
+                                    double totalMinutes = timeSlot.TSDuration;
                                     int hours = (int)(totalMinutes / 60);
                                     int minutes = (int)(totalMinutes % 60);
 
@@ -58,7 +71,7 @@
                                 }
                                 @timeFormatted
                             </p>
-                            <p><strong>Description:</strong> @entry.TSDescription</p>
+                            <p><strong>Description:</strong> @timeSlot.TSDescription</p>
                         </div>
                     }
                 }
@@ -68,20 +81,14 @@
                 }
             </div>
 
-            <!-- Disable Edit Button if no Time Slot -->
-            @if (editableDays.Contains(day.Date) && Model.TimeSlots.Any(ts => ts.TSDate.Date == day.Date))
+            <!-- Only show buttons within the allowed date range (today and up to 3 days before) -->
+            @if (isWithinAllowedRange)
             {
-                <button class="edit-btn" onclick="openEditPopup('@day.ToString("dddd, MMM dd")')">Edit Time Slot</button>
-            }
-            else
-            {
-                <button class="edit-btn" disabled>Edit Time Slot</button>
-                <p class="info-text">Editing is disabled for this date.</p>
-            }
-
-            @if (editableDays.Contains(day.Date)) // Check if the day is editable
-            {
-                <button class="add-btn" onclick="openAddPopup('@day.ToString("yyyy-MM-dd")')">Add Time Slot</button>
+                <!-- Disable edit button if no time slots exist for the day -->
+                <button class="edit-btn" onclick="openEditPopup('@day.ToString("dddd, MMM dd")')" @(timeSlotsForDay.Any() ? "" : "disabled")>Edit Time Slot</button>
+                
+                <!-- Disable add button if time slots already exist for the day -->
+                <button class="add-btn" onclick="openAddPopup('@day.ToString("yyyy-MM-dd")')" @(timeSlotsForDay.Any() ? "disabled" : "")>Add Time Slot</button>
             }
             else
             {
@@ -90,6 +97,7 @@
         </div>
     }
 </div>
+
 
 <style>
     .time-entry {
