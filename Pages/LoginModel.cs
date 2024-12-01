@@ -95,6 +95,7 @@ public class LoginModel : PageModel
 
             else if (errorMessage == "Change password")
             {
+                HttpContext.Session.SetString("StudentNetId", NetId);
                 return RedirectToPage("/ChangePassword");
             }
 

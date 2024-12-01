@@ -19,7 +19,7 @@ using System.Data;
 
         public IActionResult OnPost(string OldPassword, string NewPassword, string ConfirmPassword)
         {
-            
+            Console.WriteLine("Change Password");
             if (NewPassword != ConfirmPassword) 
             {
                 ErrorMessage = "Passwords Do Not Match. Try Again.";
@@ -46,15 +46,20 @@ using System.Data;
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@stu_username", stuNetID);
+                        Console.WriteLine(stuNetID);
                         cmd.Parameters.AddWithValue("@old_student_password", OldPassword);
+                        Console.WriteLine(OldPassword);
                         cmd.Parameters.AddWithValue("@new_student_password", NewPassword);
+                        Console.WriteLine(NewPassword);
+
+
                         var errorParam = new MySqlParameter("@error_message", MySqlDbType.VarChar)
                         {
                             Size = 100,
                             Direction = ParameterDirection.Output
                         };
                         cmd.Parameters.Add(errorParam);
-
+                        
                         Console.WriteLine("Excecuting change_student_password");
                         cmd.ExecuteNonQuery();
                         errorMessage = errorParam.Value.ToString() ?? string.Empty;
@@ -84,7 +89,7 @@ using System.Data;
                         {
                             // Store the student information in session
                             HttpContext.Session.SetString("StudentPassword", student.Password);
-                            return RedirectToPage("/WeeklyView");
+                            return RedirectToPage("/Login");
                         }
                         else 
                         {

@@ -99,6 +99,7 @@ public class LastWeekViewModel : PageModel
 
         // Display any error message from the operation.
         ViewData["ErrorMessage"] = statusMessage;
+        Console.WriteLine(DateTime.Parse(SelectedDate));
 
         // Reload the time slots for the page.
         LoadLastWeekTimeSlots();
@@ -164,91 +165,106 @@ public class LastWeekViewModel : PageModel
     // - Populates the `TimeSlots` property with the time slot details
     // Method to load the current week's time slots and total time for a student.
     private void LoadLastWeekTimeSlots()
+{
+    // Connection string for the MySQL database
+    string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";
+
+    // Retrieve the student's NetID from the session (used for identifying the student in the database)
+    string stuNetID = HttpContext.Session.GetString("StudentNetId");
+
+    // Check if the student NetID is null or empty, if so, log an error and return early
+    if (string.IsNullOrEmpty(stuNetID))
     {
-        // Connection string for the MySQL database
-        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";
+        Console.WriteLine("Error: StudentNetId not found in session.");
+        return;
+    }
 
-        // Retrieve the student's NetID from the session (used for identifying the student in the database)
-        string stuNetID = HttpContext.Session.GetString("StudentNetId");
+    // Establish a connection to the database using the provided connection string
+    using (var connection = new MySqlConnection(connectionString))
+    {
+        connection.Open(); // Open the connection to the database
 
-        // Check if the student NetID is null or empty, if so, log an error and return early
-        if (string.IsNullOrEmpty(stuNetID))
+        // Calculate the start and end dates for the previous week
+        DateTime endDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1); // Sunday
+        DateTime startDate = endDate.AddDays(-6); // Monday of the previous week
+
+        // Retrieve time slots from the previous week using the stored procedure
+        using (var cmd = new MySqlCommand("student_timeslot_by_week", connection))
         {
-            Console.WriteLine("Error: StudentNetId not found in session.");
-            return;
-        }
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@stu_netID", stuNetID);
+            cmd.Parameters.AddWithValue("@start_date", startDate);
 
-        // Establish a connection to the database using the provided connection string
-        using (var connection = new MySqlConnection(connectionString))
-        {
-            connection.Open(); // Open the connection to the database
-
-            // Calculate the start and end dates for the previous week.
-            DateTime endDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1); // Sunday
-            DateTime startDate = endDate.AddDays(-6); // Monday of the previous week
-
-            // Retrieve time slots from the previous week using the stored procedure.
-            using (var cmd = new MySqlCommand("student_timeslot_by_week", connection))
+            using (var reader = cmd.ExecuteReader())
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@stu_netID", stuNetID);
-                cmd.Parameters.AddWithValue("@start_date", startDate);
-
-                using (var reader = cmd.ExecuteReader())
+                while (reader.Read())
                 {
-                    while (reader.Read())
+                    // Extract duration from the database in HH:MM format
+                    string durationString = reader.GetString(4);
+                    int totalMinutes = 0; // Default to 0 if duration is invalid
+
+                    if (!string.IsNullOrEmpty(durationString))
                     {
-                        // Convert the duration from string (HH:MM) to total minutes.
-                        string durationString = reader.GetString(4);
                         string[] timeParts = durationString.Split(':');
-                        int hours = int.Parse(timeParts[0]);
-                        int minutes = int.Parse(timeParts[1]);
-                        int totalMinutes = (hours * 60) + minutes;
-
-                        // Add the time slot to the list.
-                        TimeSlot timeSlot = new TimeSlot
+                        if (timeParts.Length == 2 
+                            && int.TryParse(timeParts[0], out int hours) 
+                            && int.TryParse(timeParts[1], out int minutes))
                         {
-                            StuName = reader.GetString(1),
-                            TSDate = reader.GetDateTime(2),
-                            TSDescription = reader.GetString(3),
-                            TSDuration = totalMinutes
-                        };
-
-                        TimeSlots.Add(timeSlot);
+                            totalMinutes = (hours * 60) + minutes; // Convert to total minutes
+                        }
                     }
+
+                    // Add the time slot to the list
+                    TimeSlot timeSlot = new TimeSlot
+                    {
+                        StuName = reader.GetString(1),
+                        TSDate = reader.GetDateTime(2),
+                        TSDescription = reader.GetString(3),
+                        TSDuration = totalMinutes
+                    };
+
+                    TimeSlots.Add(timeSlot);
                 }
             }
+        }
 
-            // Retrieve the total time spent during the week and convert to HH:MM format.
-            using (var cmd = new MySqlCommand("student_time_in_range", connection))
+        // Retrieve the total time spent during the week and convert to HH:MM format
+        using (var cmd = new MySqlCommand("student_time_in_range", connection))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            // Add parameters for the stored procedure
+            cmd.Parameters.AddWithValue("@student_netID", stuNetID);
+            cmd.Parameters.AddWithValue("@startDate", startDate);
+            cmd.Parameters.AddWithValue("@endDate", endDate);
+
+            // Define a parameter to hold the output for the total time in minutes
+            var statusParam = new MySqlParameter("@student_total", MySqlDbType.VarChar, 255);
+            statusParam.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(statusParam);
+
+            cmd.ExecuteNonQuery();
+
+            // Capture the result (total time in minutes) from the output parameter
+            int totalMinutes = 0; // Default to 0 if output is invalid
+
+            if (!string.IsNullOrEmpty(statusParam.Value?.ToString()) 
+                && int.TryParse(statusParam.Value.ToString(), out int parsedMinutes))
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                // Add parameters for the stored procedure
-                cmd.Parameters.AddWithValue("@student_netID", stuNetID);
-                cmd.Parameters.AddWithValue("@startDate", startDate);
-                cmd.Parameters.AddWithValue("@endDate", endDate);
-
-                // Define a parameter to hold the output for the total time in minutes
-                var statusParam = new MySqlParameter("@student_total", MySqlDbType.VarChar, 255);
-                statusParam.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(statusParam);
-
-                cmd.ExecuteNonQuery();
-
-                // Capture the result (total time in minutes) from the output parameter
-                int totalMinutes = int.Parse(statusParam.Value.ToString());
-
-                // Convert total minutes to hours and minutes
-                int hours = totalMinutes / 60;
-                int minutes = totalMinutes % 60;
-
-                // Format the total time as HH:MM and assign to the TotalTime property
-                TotalTime = $"{hours:D2}:{minutes:D2}";  
-
-                // Log the total time in the console for debugging purposes
-                Console.WriteLine("Total(HH:MM): " + TotalTime);
+                totalMinutes = parsedMinutes;
             }
+
+            // Convert total minutes to hours and minutes
+            int hours = totalMinutes / 60;
+            int minutes = totalMinutes % 60;
+
+            // Format the total time as HH:MM and assign to the TotalTime property
+            TotalTime = $"{hours:D2}:{minutes:D2}";  
+
+            // Log the total time in the console for debugging purposes
+            Console.WriteLine("Total(HH:MM): " + TotalTime);
         }
     }
+}
+
 }
