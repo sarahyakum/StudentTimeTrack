@@ -112,9 +112,9 @@ public class LastWeekViewModel : PageModel
     // - Edits the time slot in the database using a stored procedure.
     // - Displays the status message (success or error) to the view.
     // - Reloads the time slots after editing.
-    public void OnPostEditTimeSlot(string SelectedDate, string EditTime, string EditDescription)
+    public void OnPostEditTimeSlot(string SelectedDate, string UpdatedTime, string UpdatedDescription)
     {
-        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";
+        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; // Update as needed
         string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
         // Validate if the student ID is null or empty
@@ -124,7 +124,7 @@ public class LastWeekViewModel : PageModel
             return;
         }
 
-        string statusMessage = "Success";
+        string statusMessage = "Success";  
 
         using (var connection = new MySqlConnection(connectionString))
         {
@@ -135,26 +135,29 @@ public class LastWeekViewModel : PageModel
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                // Add parameters for student NetID, updated time slot details.
+                // Parameters for the stored procedure
                 cmd.Parameters.AddWithValue("@student_netID", stuNetID);
                 cmd.Parameters.AddWithValue("@ts_date", DateTime.Parse(SelectedDate));
-                cmd.Parameters.AddWithValue("@updated_description", EditDescription);
-                cmd.Parameters.AddWithValue("@updated_duration", EditTime);
+                cmd.Parameters.AddWithValue("@updated_description", UpdatedDescription);
+                cmd.Parameters.AddWithValue("@updated_duration", UpdatedTime); 
 
+                // Variable to hold status or error message
                 var statusParam = new MySqlParameter("@error_message", MySqlDbType.VarChar, 255);
                 statusParam.Direction = ParameterDirection.Output;
                 cmd.Parameters.Add(statusParam);
 
-                // Execute the stored procedure.
                 cmd.ExecuteNonQuery();
+
+                // Capture the status message from the output parameter
                 statusMessage = statusParam.Value.ToString();
+                Console.WriteLine("Stored Procedure Status: " + statusMessage);
             }
         }
 
-        // Display the error message if any.
+        // Pass the status message to the view (error message from stored procedure)
         ViewData["ErrorMessage"] = statusMessage;
 
-        // Reload the time slots for the page.
+        // Reload the time slots after the update
         LoadLastWeekTimeSlots();
     }
 

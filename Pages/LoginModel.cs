@@ -14,6 +14,16 @@ public class LoginModel : PageModel
 {
     public string ErrorMessage { get; set; }
 
+
+    public IActionResult OnGet()
+    {
+        if (HttpContext.Session.GetString("LoggedIn") != null) // user is logged in
+        {
+            return RedirectToPage("/Logout");
+        }
+        return Page();
+    }
+
     // This method authenticates the student based on NetId and UtdId, retrieves their details from the database,
     // and stores them in the session if login is successful.
     // Inputs: NetID and UTDID
@@ -87,6 +97,7 @@ public class LoginModel : PageModel
                 HttpContext.Session.SetString("StudentNetId", student.NetId);
                 HttpContext.Session.SetString("StudentUtdId", student.UtdId);
                 HttpContext.Session.SetString("StudentName", student.Name);
+                HttpContext.Session.SetString("LoggedIn", student.NetId);
 
 
                 return RedirectToPage("/WeeklyView");
