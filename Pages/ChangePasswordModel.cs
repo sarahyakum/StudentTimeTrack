@@ -37,10 +37,10 @@ public class ChangePasswordModel : PageModel
         }
         else
         {
-            // Retrieve the Student's NetID from the session.
+            
             string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
-            // If the session has expired or is invalid, redirect to the login page.
+           
             if (string.IsNullOrEmpty(stuNetID))
             {
                 ErrorMessage = "Session expired or invalid. Please log in again.";
