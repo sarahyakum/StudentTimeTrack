@@ -10,12 +10,13 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Data;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
 public class LastWeekViewModel : PageModel
 {
     // List to hold time slots fetched from the database.
     public List<TimeSlot> TimeSlots { get; set; } = new List<TimeSlot>();
-    
+
     // Total time logged in the previous week.
     public string TotalTime { get; set; }
 
@@ -41,6 +42,15 @@ public class LastWeekViewModel : PageModel
     [BindProperty]
     public DateTime EditSelectedDate { get; set; }
 
+    private readonly string connectionString;
+
+    // Constructor to initialize the model with a connection string from the configuration.
+    // Input: IConfiguration configuration (contains application settings).
+    public LastWeekViewModel(IConfiguration configuration)
+    {
+        connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
+
     // Loads time slots from the previous week when the page is accessed.
     public void OnGet()
     {
@@ -55,22 +65,20 @@ public class LastWeekViewModel : PageModel
     // - Reloads the time slots after adding.
     public void OnPostAddTimeSlot(string SelectedDate, string AddTime, string AddDescription)
     {
-        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";
-        
-        // Retrieves the student's NetID from the session.
-        string stuNetID = HttpContext.Session.GetString("StudentNetId");
+
     
-        // If NetID is not found, log the error and return.
+        string stuNetID = HttpContext.Session.GetString("StudentNetId");
+
         if (string.IsNullOrEmpty(stuNetID))
         {
             Console.WriteLine("Error: StudentNetId not found in session.");
             return;
         }
-    
-        // Default status message.
-        string statusMessage = "Success"; 
 
-        // Open connection to MySQL database.
+        // Default status message.
+        string statusMessage = "Success";
+
+       // Establish a database connection using the connection string.
         using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open();
@@ -86,7 +94,7 @@ public class LastWeekViewModel : PageModel
                 cmd.Parameters.AddWithValue("@ts_description", AddDescription);
                 cmd.Parameters.AddWithValue("@ts_duration", AddTime);
 
-                // Add output parameter for error message.
+              
                 var statusParam = new MySqlParameter("@error_message", MySqlDbType.VarChar, 255);
                 statusParam.Direction = ParameterDirection.Output;
                 cmd.Parameters.Add(statusParam);
@@ -114,7 +122,6 @@ public class LastWeekViewModel : PageModel
     // - Reloads the time slots after editing.
     public void OnPostEditTimeSlot(string SelectedDate, string UpdatedTime, string UpdatedDescription)
     {
-        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; // Update as needed
         string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
         // Validate if the student ID is null or empty
@@ -124,7 +131,7 @@ public class LastWeekViewModel : PageModel
             return;
         }
 
-        string statusMessage = "Success";  
+        string statusMessage = "Success";
 
         using (var connection = new MySqlConnection(connectionString))
         {
@@ -139,9 +146,8 @@ public class LastWeekViewModel : PageModel
                 cmd.Parameters.AddWithValue("@student_netID", stuNetID);
                 cmd.Parameters.AddWithValue("@ts_date", DateTime.Parse(SelectedDate));
                 cmd.Parameters.AddWithValue("@updated_description", UpdatedDescription);
-                cmd.Parameters.AddWithValue("@updated_duration", UpdatedTime); 
+                cmd.Parameters.AddWithValue("@updated_duration", UpdatedTime);
 
-                // Variable to hold status or error message
                 var statusParam = new MySqlParameter("@error_message", MySqlDbType.VarChar, 255);
                 statusParam.Direction = ParameterDirection.Output;
                 cmd.Parameters.Add(statusParam);
@@ -168,106 +174,102 @@ public class LastWeekViewModel : PageModel
     // - Populates the `TimeSlots` property with the time slot details
     // Method to load the current week's time slots and total time for a student.
     private void LoadLastWeekTimeSlots()
-{
-    // Connection string for the MySQL database
-    string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";
-
-    // Retrieve the student's NetID from the session (used for identifying the student in the database)
-    string stuNetID = HttpContext.Session.GetString("StudentNetId");
-
-    // Check if the student NetID is null or empty, if so, log an error and return early
-    if (string.IsNullOrEmpty(stuNetID))
     {
-        Console.WriteLine("Error: StudentNetId not found in session.");
-        return;
-    }
 
-    // Establish a connection to the database using the provided connection string
-    using (var connection = new MySqlConnection(connectionString))
-    {
-        connection.Open(); // Open the connection to the database
+        // Retrieve the student's NetID from the session (used for identifying the student in the database)
+        string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
-        // Calculate the start and end dates for the previous week
-        DateTime endDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1); // Sunday
-        DateTime startDate = endDate.AddDays(-6); // Monday of the previous week
 
-        // Retrieve time slots from the previous week using the stored procedure
-        using (var cmd = new MySqlCommand("student_timeslot_by_week", connection))
+        if (string.IsNullOrEmpty(stuNetID))
         {
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@stu_netID", stuNetID);
-            cmd.Parameters.AddWithValue("@start_date", startDate);
+            Console.WriteLine("Error: StudentNetId not found in session.");
+            return;
+        }
 
-            using (var reader = cmd.ExecuteReader())
+        // Establish a connection to the database using the provided connection string
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            connection.Open(); // Open the connection to the database
+
+            // Calculate the start and end dates for the previous week
+            DateTime endDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek - 1); // Sunday
+            DateTime startDate = endDate.AddDays(-6); // Monday of the previous week
+
+            // Retrieve time slots from the previous week using the stored procedure
+            using (var cmd = new MySqlCommand("student_timeslot_by_week", connection))
             {
-                while (reader.Read())
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@stu_netID", stuNetID);
+                cmd.Parameters.AddWithValue("@start_date", startDate);
+
+                using (var reader = cmd.ExecuteReader())
                 {
-                    // Extract duration from the database in HH:MM format
-                    string durationString = reader.GetString(4);
-                    int totalMinutes = 0; // Default to 0 if duration is invalid
-
-                    if (!string.IsNullOrEmpty(durationString))
+                    while (reader.Read())
                     {
-                        string[] timeParts = durationString.Split(':');
-                        if (timeParts.Length == 2 
-                            && int.TryParse(timeParts[0], out int hours) 
-                            && int.TryParse(timeParts[1], out int minutes))
+                        // Extract duration from the database in HH:MM format
+                        string durationString = reader.GetString(4);
+                        int totalMinutes = 0; // Default to 0 if duration is invalid
+
+                        if (!string.IsNullOrEmpty(durationString))
                         {
-                            totalMinutes = (hours * 60) + minutes; // Convert to total minutes
+                            string[] timeParts = durationString.Split(':');
+                            if (timeParts.Length == 2
+                                && int.TryParse(timeParts[0], out int hours)
+                                && int.TryParse(timeParts[1], out int minutes))
+                            {
+                                totalMinutes = (hours * 60) + minutes; // Convert to total minutes
+                            }
                         }
+
+                        // Add the time slot to the list
+                        TimeSlot timeSlot = new TimeSlot
+                        {
+                            StuName = reader.GetString(1),
+                            TSDate = reader.GetDateTime(2),
+                            TSDescription = reader.GetString(3),
+                            TSDuration = totalMinutes
+                        };
+
+                        TimeSlots.Add(timeSlot);
                     }
-
-                    // Add the time slot to the list
-                    TimeSlot timeSlot = new TimeSlot
-                    {
-                        StuName = reader.GetString(1),
-                        TSDate = reader.GetDateTime(2),
-                        TSDescription = reader.GetString(3),
-                        TSDuration = totalMinutes
-                    };
-
-                    TimeSlots.Add(timeSlot);
                 }
             }
-        }
 
-        // Retrieve the total time spent during the week and convert to HH:MM format
-        using (var cmd = new MySqlCommand("student_time_in_range", connection))
-        {
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            // Add parameters for the stored procedure
-            cmd.Parameters.AddWithValue("@student_netID", stuNetID);
-            cmd.Parameters.AddWithValue("@startDate", startDate);
-            cmd.Parameters.AddWithValue("@endDate", endDate);
-
-            // Define a parameter to hold the output for the total time in minutes
-            var statusParam = new MySqlParameter("@student_total", MySqlDbType.VarChar, 255);
-            statusParam.Direction = ParameterDirection.Output;
-            cmd.Parameters.Add(statusParam);
-
-            cmd.ExecuteNonQuery();
-
-            // Capture the result (total time in minutes) from the output parameter
-            int totalMinutes = 0; // Default to 0 if output is invalid
-
-            if (!string.IsNullOrEmpty(statusParam.Value?.ToString()) 
-                && int.TryParse(statusParam.Value.ToString(), out int parsedMinutes))
+            // Retrieve the total time spent during the week and convert to HH:MM format
+            using (var cmd = new MySqlCommand("student_time_in_range", connection))
             {
-                totalMinutes = parsedMinutes;
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                // Add parameters for the stored procedure
+                cmd.Parameters.AddWithValue("@student_netID", stuNetID);
+                cmd.Parameters.AddWithValue("@startDate", startDate);
+                cmd.Parameters.AddWithValue("@endDate", endDate);
+
+                // Define a parameter to hold the output for the total time in minutes
+                var statusParam = new MySqlParameter("@student_total", MySqlDbType.VarChar, 255);
+                statusParam.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(statusParam);
+
+                cmd.ExecuteNonQuery();
+
+             
+                int totalMinutes = 0; // Default to 0 if output is invalid
+
+                if (!string.IsNullOrEmpty(statusParam.Value?.ToString())
+                    && int.TryParse(statusParam.Value.ToString(), out int parsedMinutes))
+                {
+                    totalMinutes = parsedMinutes;
+                }
+
+                
+                int hours = totalMinutes / 60;
+                int minutes = totalMinutes % 60;
+
+                TotalTime = $"{hours:D2}:{minutes:D2}";
+
+                Console.WriteLine("Total(HH:MM): " + TotalTime);
             }
-
-            // Convert total minutes to hours and minutes
-            int hours = totalMinutes / 60;
-            int minutes = totalMinutes % 60;
-
-            // Format the total time as HH:MM and assign to the TotalTime property
-            TotalTime = $"{hours:D2}:{minutes:D2}";  
-
-            // Log the total time in the console for debugging purposes
-            Console.WriteLine("Total(HH:MM): " + TotalTime);
         }
     }
-}
 
 }

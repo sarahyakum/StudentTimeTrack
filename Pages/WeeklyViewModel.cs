@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using MySql.Data.MySqlClient;
 using System;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 public class WeeklyViewModel : PageModel
 {
@@ -24,7 +25,17 @@ public class WeeklyViewModel : PageModel
     [BindProperty]
     public string AddDescription { get; set; } 
     [BindProperty]
-    public DateTime SelectedDate { get; set; } 
+    public DateTime SelectedDate { get; set; }
+
+    private readonly string connectionString;
+
+    // Constructor to initialize the model with a connection string from the configuration.
+    // Input: IConfiguration configuration (contains application settings).
+    public WeeklyViewModel(IConfiguration configuration)
+    {
+        connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
+
 
     // OnGet method to load the current week's time slots.
     public void OnGet()
@@ -40,18 +51,18 @@ public class WeeklyViewModel : PageModel
     // - Reloads the time slots after adding.
     public void OnPostAddTimeSlot(string SelectedDate, string AddTime, string AddDescription)
     {
-        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; // Update as needed
         string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
-        // Validate if the student ID is null or empty
+        
         if (string.IsNullOrEmpty(stuNetID))
         {
             Console.WriteLine("Error: StudentNetId not found in session.");
             return;
         }
 
-        string statusMessage = "Success";  // Default to success message
+        string statusMessage = "Success";  
 
+        // Establish a database connection using the connection string.
         using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open();
@@ -75,7 +86,7 @@ public class WeeklyViewModel : PageModel
 
                 cmd.ExecuteNonQuery();
 
-                // Capture the status message from the output parameter
+                
                 statusMessage = statusParam.Value.ToString();
                 Console.WriteLine("Stored Procedure Status: " + statusMessage);
             }
@@ -98,10 +109,9 @@ public class WeeklyViewModel : PageModel
     // - Reloads the time slots after editing.
     public void OnPostEditTimeSlot(string SelectedDate, string UpdatedTime, string UpdatedDescription)
     {
-        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; // Update as needed
         string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
-        // Validate if the student ID is null or empty
+        
         if (string.IsNullOrEmpty(stuNetID))
         {
             Console.WriteLine("Error: StudentNetId not found in session.");
@@ -110,6 +120,7 @@ public class WeeklyViewModel : PageModel
 
         string statusMessage = "Success";  
 
+        // Establish a database connection using the connection string.
         using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open();
@@ -132,13 +143,11 @@ public class WeeklyViewModel : PageModel
 
                 cmd.ExecuteNonQuery();
 
-                // Capture the status message from the output parameter
                 statusMessage = statusParam.Value.ToString();
                 Console.WriteLine("Stored Procedure Status: " + statusMessage);
             }
         }
 
-        // Pass the status message to the view (error message from stored procedure)
         ViewData["ErrorMessage"] = statusMessage;
 
         // Reload the time slots after the update
@@ -153,20 +162,16 @@ public class WeeklyViewModel : PageModel
     // Method to load the current week's time slots and total time for a student.
     private void LoadCurrentWeekTimeSlots()
 {
-    // Connection string for the MySQL database
-    string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";
-
-    // Retrieve the student's NetID from the session (used for identifying the student in the database)
+    
     string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
-    // Check if the student NetID is null or empty, if so, log an error and return early
     if (string.IsNullOrEmpty(stuNetID))
     {
         Console.WriteLine("Error: StudentNetId not found in session.");
         return;
     }
 
-    // Establish a connection to the database using the provided connection string
+    // Establish a database connection using the connection string. 
     using (var connection = new MySqlConnection(connectionString))
     {
         connection.Open(); // Open the connection to the database
@@ -184,12 +189,12 @@ public class WeeklyViewModel : PageModel
             cmd.Parameters.AddWithValue("@stu_netID", stuNetID);
             cmd.Parameters.AddWithValue("@start_date", startDate);
 
-            // Execute the stored procedure and read the results
+            
             using (var reader = cmd.ExecuteReader())
             {
                 Console.WriteLine("Executing stored procedure: student_timeslot_by_week for current week with stuNetID: " + stuNetID);
 
-                // Loop through the returned time slot data and add each time slot to the TimeSlots list
+               
                 while (reader.Read())
                 {
                     // Extract duration from the database in HH:MM format
@@ -238,7 +243,7 @@ public class WeeklyViewModel : PageModel
 
             cmd.ExecuteNonQuery();
 
-            // Capture the result (total time in minutes) from the output parameter
+            
             int totalMinutes = 0;
 
             if (!string.IsNullOrEmpty(statusParam.Value?.ToString())
@@ -251,10 +256,9 @@ public class WeeklyViewModel : PageModel
             int hours = totalMinutes / 60;
             int minutes = totalMinutes % 60;
 
-            // Format the total time as HH:MM and assign to the TotalTime property
+    
             TotalTime = $"{hours:D2}:{minutes:D2}";
 
-            // Log the total time in the console for debugging purposes
             Console.WriteLine("Total(HH:MM): " + TotalTime);
         }
     }

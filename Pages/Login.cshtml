@@ -1,8 +1,8 @@
 @page
 @model LoginModel
-
 <!-- Written by Kiara Vaz for CS4385.0W1, , Senior Design Project, Started October 3, 2024 -->
 <!-- Net ID: KMV200000 -->
+<!-- This file outlines the Login Razor Page. -->
 
 @{
     ViewData["Title"] = "Log In";
@@ -10,11 +10,13 @@
 
 <h1>Log In</h1>
 
+<!-- Display error if any -->
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <div style="color: red;">@Model.ErrorMessage</div>
 }
 
+<!-- Form for cLoggin In -->
 <form method="post">
     <div>
         <label for="netId">NetID:</label>

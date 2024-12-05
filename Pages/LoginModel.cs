@@ -9,12 +9,19 @@ using Microsoft.AspNetCore.Http;
 using MySql.Data.MySqlClient;
 using System.Data;
 using StudentTimeTrack.Data;
+using Microsoft.Extensions.Configuration;
 
 public class LoginModel : PageModel
 {
     public string ErrorMessage { get; set; }
+    private readonly string connectionString;
 
-
+    public LoginModel(IConfiguration configuration)
+{
+    connectionString = configuration.GetConnectionString("DefaultConnection");
+}
+    // Constructor to initialize the model with a connection string from the configuration.
+    // Input: IConfiguration configuration (contains application settings).
     public IActionResult OnGet()
     {
         if (HttpContext.Session.GetString("LoggedIn") != null) // user is logged in
@@ -23,14 +30,13 @@ public class LoginModel : PageModel
         }
         return Page();
     }
+    
 
     // This method authenticates the student based on NetId and UtdId, retrieves their details from the database,
     // and stores them in the session if login is successful.
     // Inputs: NetID and UTDID
     public IActionResult OnPost(string NetId, string UtdId)
     {
-        // Define the connection string to connect to the MySQL database.
-        string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;"; // Update as needed
 
         // Open a connection to the MySQL database using the connection string.
         using (var connection = new MySqlConnection(connectionString))
@@ -47,7 +53,6 @@ public class LoginModel : PageModel
                 cmd.Parameters.AddWithValue("@stu_input_username", NetId);
                 cmd.Parameters.AddWithValue("@stu_input_password", UtdId);
 
-                // Create an output parameter to capture the error message returned from the stored procedure.
                 var errorParam = new MySqlParameter("@error_message", MySqlDbType.VarChar)
                 {
                     Size = 100,
@@ -78,7 +83,6 @@ public class LoginModel : PageModel
                     // Execute the query and process the result.
                     using (var reader = cmd.ExecuteReader())
                     {
-                        // If the query returns data (i.e., the student exists), populate the student object.
                         if (reader.Read())
                         {
                             student = new Student

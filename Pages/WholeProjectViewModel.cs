@@ -9,6 +9,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 public class WholeProjectViewModel : PageModel
 {
@@ -23,6 +24,15 @@ public class WholeProjectViewModel : PageModel
     // Properties for project start and end dates
     public DateTime ProjectStartDate { get; set; }
     public DateTime ProjectEndDate { get; set; }
+
+    // Constructor to initialize the model with a connection string from the configuration.
+    // Input: IConfiguration configuration (contains application settings).
+    private readonly string connectionString;
+
+    public WholeProjectViewModel(IConfiguration configuration)
+    {
+        connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
 
    
 
@@ -73,27 +83,24 @@ public class WholeProjectViewModel : PageModel
     // Outputs: ProjectStartDate and ProjectEndDate are updated.
    private void GetTimeFrame()
 {
-    // Connection string for the MySQL database.
-    string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";
     
-    // Retrieve the student's NetID from the session.
+    
     string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
-    // Check if the student's NetID is available in the session.
+    
     if (string.IsNullOrEmpty(stuNetID))
     {
-        // Log an error message and exit if the NetID is not found.
         Console.WriteLine("Error: StudentNetId not found in session.");
         return;
     }
 
-    // Open a connection to the MySQL database using the connection string.
+    // Establish a database connection using the connection string.
     using (var connection = new MySqlConnection(connectionString))
     {
         connection.Open();
 
         // Retrieve the section code for the student.
-        string sectionCode = null; // Variable to store the section code.
+        string sectionCode = null; 
         using (var cmd = new MySqlCommand("SELECT SecCode FROM MemberOf WHERE StuNetID = @StuNetID", connection))
         {
            
@@ -101,13 +108,11 @@ public class WholeProjectViewModel : PageModel
 
             
             var result = cmd.ExecuteScalar();
-            sectionCode = result?.ToString(); // Convert result to string if not null.
+            sectionCode = result?.ToString(); 
         }
-
-        // Check if the section code was successfully retrieved.
         if (string.IsNullOrEmpty(sectionCode))
         {
-            // Log an error message and exit if the section code is not found.
+           
             Console.WriteLine("Error: Section code not found for the student.");
             return;
         }
@@ -115,7 +120,7 @@ public class WholeProjectViewModel : PageModel
         // Retrieve the project start and end dates using the section code.
         using (var cmd = new MySqlCommand("get_section_timeframe", connection))
         {
-            // Specify that the command is a stored procedure.
+            
             cmd.CommandType = CommandType.StoredProcedure;
 
             // Add the section code as a parameter to the stored procedure.
@@ -124,7 +129,7 @@ public class WholeProjectViewModel : PageModel
             
             using (var reader = cmd.ExecuteReader())
             {
-                // Check if the reader contains any rows.
+                
                 if (reader.Read())
                 {
                     // Retrieve the start and end dates from the result set.
@@ -133,7 +138,7 @@ public class WholeProjectViewModel : PageModel
                 }
                 else
                 {
-                    // Log an error message if no timeframe is found for the section code.
+                    
                     Console.WriteLine("Error: No timeframe found for the section code.");
                 }
             }
@@ -148,32 +153,28 @@ public class WholeProjectViewModel : PageModel
     // Outputs: TimeSlots is populated, TotalTime is updated in HH:MM format.
  private void LoadTimeSlots()
 {
-    // Connection string for the MySQL database.
-    string connectionString = "server=127.0.0.1;user=root;password=Kiav@z1208;database=seniordesignproject;";
 
-    // Retrieve the student's NetID from the session.
     string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
-    // Check if the student's NetID is available in the session.
+   
     if (string.IsNullOrEmpty(stuNetID))
     {
-        // Log an error message and exit if the NetID is not found.
         Console.WriteLine("Error: StudentNetId not found in session.");
         return;
     }
 
-    // Open a connection to the MySQL database using the connection string.
+    // Establish a database connection using the connection string.
     using (var connection = new MySqlConnection(connectionString))
     {
         connection.Open();
 
-        // Step 1: Load time slots for the selected month.
+       
         // Determine the start date of the selected month (1st day of the month).
         DateTime startDate = new DateTime(SelectedYear, SelectedMonth, 1);
 
         using (var cmd = new MySqlCommand("student_timeslot_by_month", connection))
         {
-            // Specify that the command is a stored procedure.
+            
             cmd.CommandType = CommandType.StoredProcedure;
 
            
@@ -183,12 +184,12 @@ public class WholeProjectViewModel : PageModel
         
             using (var reader = cmd.ExecuteReader())
             {
-                // Loop through the result set to retrieve and process each time slot.
+               
                 while (reader.Read())
                 {
                     // Parse the duration string (HH:MM format) into total minutes.
-                    string[] timeParts = reader.GetString(4).Split(':'); // Split duration by colon.
-                    int totalMinutes = (int.Parse(timeParts[0]) * 60) + int.Parse(timeParts[1]); // Calculate total minutes.
+                    string[] timeParts = reader.GetString(4).Split(':');
+                    int totalMinutes = (int.Parse(timeParts[0]) * 60) + int.Parse(timeParts[1]); 
 
                     // Add the time slot to the `TimeSlots` list.
                     TimeSlots.Add(new TimeSlot
@@ -202,19 +203,19 @@ public class WholeProjectViewModel : PageModel
             }
         }
 
-        // Step 2: Retrieve the total time logged by the student.
+        // Retrieve the total time logged by the student.
         using (var cmd = new MySqlCommand("student_total_time", connection))
         {
-            // Specify that the command is a stored procedure.
+           
             cmd.CommandType = CommandType.StoredProcedure;
 
-            // Add the student's NetID as a parameter to the stored procedure.
+           
             cmd.Parameters.AddWithValue("@student_netID", stuNetID);
 
             // Add an output parameter to retrieve the total time logged by the student.
             var statusParam = new MySqlParameter("@student_total", MySqlDbType.VarChar, 255)
             {
-                Direction = ParameterDirection.Output // Specify that this parameter is an output parameter.
+                Direction = ParameterDirection.Output 
             };
             cmd.Parameters.Add(statusParam);
 
@@ -222,7 +223,6 @@ public class WholeProjectViewModel : PageModel
 
             int totalMinutes = int.Parse(statusParam.Value.ToString());
 
-            // Convert the total minutes to the HH:MM format and store it in the `TotalTime` property.
             TotalTime = $"{totalMinutes / 60:D2}:{totalMinutes % 60:D2}"; 
         }
     }

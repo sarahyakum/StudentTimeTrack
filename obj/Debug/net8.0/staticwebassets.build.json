@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "1XZMFGhR3I4FFKfF4K3URiQ1dx0Fl0fwtph304S35B8=",
+  "Hash": "kZrVNCT1fdOUyPYKkEubWoveMtQWnvpCLxNWGxXxGHE=",
   "Source": "StudentWebApp",
   "BasePath": "_content/StudentWebApp",
   "Mode": "Default",
@@ -53,25 +53,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/obj/Debug/net8.0/scopedcss/projectbundle/StudentWebApp.bundle.scp.css"
-    },
-    {
-      "Identity": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/login.css",
-      "SourceId": "StudentWebApp",
-      "SourceType": "Discovered",
-      "ContentRoot": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/",
-      "BasePath": "_content/StudentWebApp",
-      "RelativePath": "css/login.css",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/css/login.css"
     },
     {
       "Identity": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/popupentry.css",

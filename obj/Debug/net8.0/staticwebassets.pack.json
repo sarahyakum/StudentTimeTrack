@@ -5,10 +5,6 @@
       "PackagePath": "staticwebassets/StudentWebApp.bundle.scp.css"
     },
     {
-      "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/login.css",
-      "PackagePath": "staticwebassets/css/login.css"
-    },
-    {
       "Id": "/Users/KiaraVaz1/SeniorProject/StudentTimeTrack/wwwroot/css/popupentry.css",
       "PackagePath": "staticwebassets/css/popupentry.css"
     },

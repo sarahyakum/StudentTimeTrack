@@ -3,11 +3,14 @@
 
 <!-- Written by Kiara Vaz for CS4385.0W1, , Senior Design Project, Started October 3, 2024 -->
 <!-- Net ID: KMV200000 -->
+<!-- This file outlines the Whole Project View Razor Page. -->
 
 @{
+    // Set the layout and title for the page
     Layout = "_Layout";
     ViewData["Title"] = "Whole Project View";
 
+    // Initialize variables for total time, selected month/year, and the days in the month
     string TotalTime = Model.TotalTime;
     var currentDate = DateTime.Today;
     int month = Model.SelectedMonth;
@@ -16,7 +19,7 @@
     int daysInMonth = DateTime.DaysInMonth(year, month);
     var daysOfMonth = Enumerable.Range(1, daysInMonth).Select(day => new DateTime(year, month, day)).ToArray();
 
-    // Get the project start and end dates
+    // Retrieve the project's start and end dates to control navigation
     DateTime projectStartDate = Model.ProjectStartDate;
     DateTime projectEndDate = Model.ProjectEndDate;
     bool isBeforeProjectStart = new DateTime(year, month, 1) < projectStartDate;
@@ -24,24 +27,27 @@
 }
 
 <h2>Whole Project View - Total Hours: @TotalTime </h2>
+<!-- Include the CSS for popup entry -->
 <link rel="stylesheet" href="~/css/popupentry.css" />
 
-
+<!-- Navigation for selecting previous or next month -->
 <div class="month-navigation">
     <form method="get">
         <input type="hidden" name="year" value="@year" />
         <input type="hidden" name="month" value="@month" />
+        <!-- Disable navigation buttons if the month is out of project range -->
         <button name="change" value="prev" @(isBeforeProjectStart ? "disabled" : "")>&lt; Previous Month</button>
         <h3>@firstDayOfMonth.ToString("MMMM yyyy")</h3>
         <button name="change" value="next" @(isAfterProjectEnd ? "disabled" : "")>Next Month &gt;</button>
     </form>
 </div>
 
+<!-- Calendar view displaying each day and its associated time entries -->
 <div class="calendar-container">
     @foreach (var day in daysOfMonth)
     {
+        // Fetch time entries for the current day and apply special styles if needed
         var entriesForDay = Model.TimeSlots.Where(ts => ts.TSDate.Date == day.Date).ToList();
-
         string dayClass = day.Date == projectStartDate || day.Date == projectEndDate ? "highlight-start-end" : "";
 
         <div class="day @(day == DateTime.Today ? "current-day" : "") @dayClass">
@@ -49,15 +55,17 @@
             <div class="time-entries">
                 @if (entriesForDay.Any())
                 {
+                    // Display time slots for the day
                     @foreach (var entry in entriesForDay)
                     {
+                        // Format the duration and truncate descriptions if too long
                         double totalMinutes = entry.TSDuration;
                         int hours = (int)(totalMinutes / 60);
                         int minutes = (int)(totalMinutes % 60);
                         string timeFormatted = $"{hours:D2}:{minutes:D2}";
                         string truncatedDescription = entry.TSDescription.Length > 50
-                            ? entry.TSDescription.Substring(0, 50) + "..."
-                            : entry.TSDescription;
+                        ? entry.TSDescription.Substring(0, 50) + "..."
+                        : entry.TSDescription;
 
                         <div class="timeslot-entry" onclick="openPopup('@entry.TSDescription')">
                             <p><strong>Time:</strong> @timeFormatted</p>
@@ -74,6 +82,7 @@
     }
 </div>
 
+<!-- Popup for displaying detailed information about a time entry if its too long -->
 <div class="popup-entry">
     <div class="popup-content">
         <span class="close" onclick="closePopup()">&times;</span>
@@ -85,23 +94,23 @@
 
 <div id="popupOverlay" class="popup-overlay" onclick="closePopup()"></div>
 
-   <script>
-        function openPopup(description) {
-            const popup = document.querySelector(".popup-entry");
-            const overlay = document.querySelector(".popup-overlay");
-            const descriptionElement = document.getElementById("popup-description");
-            
-            descriptionElement.textContent = description;
-            popup.classList.add("show");
-            overlay.style.display = "block";
-        }
+<!-- JavaScript for handling popup interactions -->
+<script>
+    function openPopup(description) {
+        const popup = document.querySelector(".popup-entry");
+        const overlay = document.querySelector(".popup-overlay");
+        const descriptionElement = document.getElementById("popup-description");
 
-        function closePopup() {
-            const popup = document.querySelector(".popup-entry");
-            const overlay = document.querySelector(".popup-overlay");
-            
-            popup.classList.remove("show");
-            overlay.style.display = "none";
-        }
-    </script>
+        descriptionElement.textContent = description;
+        popup.classList.add("show");
+        overlay.style.display = "block";
+    }
 
+    function closePopup() {
+        const popup = document.querySelector(".popup-entry");
+        const overlay = document.querySelector(".popup-overlay");
+
+        popup.classList.remove("show");
+        overlay.style.display = "none";
+    }
+</script>
