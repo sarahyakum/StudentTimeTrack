@@ -5,7 +5,7 @@ The project was built using **ASP.NET Core Razor Pages**.
 
 ---
 ## Project Contributors  
-Kiara Vaz (kmv200000) 
+Kiara Vaz (kmv200000) and Darya Anbar (dxa200020)
 
 ---
 ## 1. Project Structure
