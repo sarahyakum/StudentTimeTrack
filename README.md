@@ -1,5 +1,4 @@
-# Student Peer Review Application
-
+# Student Time Tracking Application 
 ## Project Overview  
 This is a web application designed to manage a student's time entries for CS 4485. Students can submit time entries and view their time entries of the past as well. 
 The project was built using **ASP.NET Core Razor Pages**.
