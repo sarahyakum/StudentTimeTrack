@@ -124,7 +124,7 @@ public class LastWeekViewModel : PageModel
     {
         string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
-        // Validate if the student ID is null or empty
+        
         if (string.IsNullOrEmpty(stuNetID))
         {
             Console.WriteLine("Error: StudentNetId not found in session.");
@@ -133,6 +133,7 @@ public class LastWeekViewModel : PageModel
 
         string statusMessage = "Success";
 
+        // Establish a database connection using the connection string.
         using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open();
@@ -176,7 +177,7 @@ public class LastWeekViewModel : PageModel
     private void LoadLastWeekTimeSlots()
     {
 
-        // Retrieve the student's NetID from the session (used for identifying the student in the database)
+    
         string stuNetID = HttpContext.Session.GetString("StudentNetId");
 
 
@@ -186,7 +187,7 @@ public class LastWeekViewModel : PageModel
             return;
         }
 
-        // Establish a connection to the database using the provided connection string
+        // Establish a database connection using the connection string.
         using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open(); // Open the connection to the database

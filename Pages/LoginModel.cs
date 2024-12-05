@@ -38,7 +38,7 @@ public class LoginModel : PageModel
     public IActionResult OnPost(string NetId, string UtdId)
     {
 
-        // Open a connection to the MySQL database using the connection string.
+       // Establish a database connection using the connection string.
         using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open();

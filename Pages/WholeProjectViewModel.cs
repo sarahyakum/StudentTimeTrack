@@ -230,13 +230,4 @@ public class WholeProjectViewModel : PageModel
 }
 
 
-// Represents a single time slot entry.
-public class TimeSlot
-{
-    public string StuNetID { get; set; }    // Student's NetID
-    public string StuName { get; set; }    // Student's name
-    public DateTime TSDate { get; set; }   // Date of the time slot
-    public string TSDescription { get; set; } // Description of the work done
-    public double TSDuration { get; set; } // Duration of the time slot in minutes
-}
 
